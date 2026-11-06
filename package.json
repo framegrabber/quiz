@@ -16,7 +16,8 @@
     "format": "prettier --write ."
   },
   "dependencies": {
-    "preact": "^11.2.0"
+    "preact": "^11.2.0",
+    "zod": "^4.6.7"
   },
   "devDependencies": {
     "@babel/core": "^7.29.13",
@@ -29,5 +30,8 @@
     "typescript": "^7.0.2",
     "vite": "^8.3.6",
     "vitest": "^5.1.0"
+  },
+  "allowScripts": {
+    "fsevents@2.3.3": true
   }
 }

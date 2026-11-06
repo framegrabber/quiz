@@ -1,0 +1,33 @@
+{
+  "$schema": "https://framegrabber.github.io/quiz/schema/quiz.v1.json",
+  "schema": 1,
+  "title": "Possessive determiners (Beispiel)",
+  "subject": "Englisch",
+  "grade": 5,
+  "source": "Green Line 1 Bayern",
+  "language": "en",
+  "roundSize": 10,
+  "categories": [
+    { "id": "forms", "name": "my, your, his …" },
+    { "id": "its", "name": "its oder it's" }
+  ],
+  "questions": [
+    {
+      "id": "pd-001",
+      "type": "choice",
+      "category": "its",
+      "prompt": "The cat is playing with ___ ball.",
+      "options": ["its", "it's", "his", "their"],
+      "answer": "its",
+      "explanation": "its = sein/ihr (Besitz). it's = it is."
+    },
+    {
+      "id": "pd-002",
+      "type": "choice",
+      "category": "forms",
+      "prompt": "Which words are possessive determiners?",
+      "options": ["my", "me", "our", "us"],
+      "answer": ["my", "our"]
+    }
+  ]
+}
