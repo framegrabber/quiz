@@ -65,7 +65,25 @@ Semantic tokens with a light and a dark palette (`prefers-color-scheme`). Ratios
 
 ## Keeping the keyboard open between typed questions
 
-To be decided by the T3 Simulator test: (a) one text field reused across questions, or (b) focus moved to the next question's field after it renders. The result and the evidence go here.
+**Decision: (b) each question renders its own text field; the Round focuses the next question's first field right after it renders**, inside the same Return keypress or "Weiter" tap. Question components stay independent; no shared, round-owned field.
+
+Evidence (iOS Simulator, iOS 26.3, Safari, software keyboard, dev spike `#spike-a`/`#spike-b`, automated with AXe taps on the on-screen keys):
+
+| Transition | (a) reused field | (b) new field |
+|---|---|---|
+| Return → feedback (field read-only) | keyboard stays | keyboard stays |
+| Return → next typed question | keyboard stays | keyboard stays |
+| Tap "Weiter" (action bar) → next typed question | keyboard stays | keyboard stays |
+| → choice question (field gone, blurred) | keyboard closes | keyboard closes |
+| Choice → tap "Weiter" → typed question | — | keyboard opens (focus inside the tap) |
+
+Checked on iPhone SE 3rd gen (visible height 287 of 549 pt with keyboard: prompt, field, feedback, and "Weiter" all visible) and iPad (A16, 715 of 1052 pt). Both mechanisms behave the same, so the simpler component model wins.
+
+Rules that make it work:
+- Focus moves synchronously after the render triggered by the user's key or tap (layout effect), never later (timers lose the user gesture and iOS will not open the keyboard).
+- Action bar buttons call `preventDefault` on `mousedown`, so tapping them does not blur the field.
+- The field becomes read-only during feedback; it is not blurred or disabled.
+- Notes: the form accessory bar's ✓ ("Fertig") dismisses the keyboard by design; the QuickType suggestion bar still shows with `autocorrect="off"`, typed text is not altered. Confirm on a real iPhone in T17.
 
 ## Rejected patterns
 

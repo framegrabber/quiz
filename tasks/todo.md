@@ -58,7 +58,7 @@ Spec: [`SPEC.md`](../SPEC.md) · Plan: [`plan.md`](plan.md). Standard gate for e
 
 **Acceptance criteria:**
 - [ ] `useVisualViewport` sets `--app-height` from `visualViewport.height` (on `resize` and `scroll`), with `100dvh` fallback; safe-area padding; content column max ~40 rem, centered, header and action bar aligned to it
-- [ ] `RoundLayout` renders header ≤ 44 px, a scrollable content area, and an action bar whose buttons `preventDefault` on `pointerdown`
+- [ ] `RoundLayout` renders header ≤ 44 px, a scrollable content area, and an action bar whose buttons `preventDefault` on `mousedown`
 - [ ] Demo screen (temporary, replaced in T9) with realistic possessives content tests both mechanisms: (a) one input element reused across two questions, (b) a different input element focused after the next question renders. The working mechanism is recorded in `docs/design.md` and becomes the T9 contract
 
 **Verification:**
