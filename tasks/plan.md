@@ -60,13 +60,13 @@ graph TD
 - [x] `https://framegrabber.github.io/quiz/` serves the app; a JSON file from `quiz-content` loads from the app origin
 - [x] Layout shell verified in the iOS Simulator (iPhone SE 3rd gen and iPad, keyboard open); focus mechanism decided: (b), see `docs/design.md`
 - [x] Design tokens reviewed by you in light and dark mode
-- [ ] Review with you
+- [x] Review with you
 
 ### Phase 2: Format contract
-- [ ] T5a: Format document schema with `choice`
-- [ ] T5b: `input` and `cloze` schemas and checks
-- [ ] T6: Validator CLI, generated JSON Schema, authoring docs
-- [ ] T7: Possessive determiners quiz and `quiz-content` CI (parallel with Phase 3)
+- [x] T5a: Format document schema with `choice`
+- [x] T5b: `input` and `cloze` schemas and checks
+- [x] T6: Validator CLI, generated JSON Schema, authoring docs
+- [x] T7: Possessive determiners quiz and `quiz-content` CI (parallel with Phase 3)
 
 ### Checkpoint B: Contract
 - [ ] Possessives quiz validates locally and in `quiz-content` CI; an invalid copy fails CI
@@ -115,7 +115,7 @@ graph TD
 | Zod 4 refinements are invisible in the generated JSON Schema | Low | Documented; the CLI is the authority, the schema only drives autocompletion |
 | Node native TS stripping can't load a module the CLI imports (JSX, non-erasable syntax) | Med | `erasableSyntaxOnly` + `definitions.ts` without Preact; CLI run is part of T6 acceptance |
 | Preact 11 ecosystem gaps (`@testing-library/preact` peer is `preact >=10`, so allowed) | Low | Confirmed in T1 by running one component test; fallback Preact 10 needs your OK |
-| 60 KB gzip budget exceeded by Zod 4 | Med | Measure in T5a; switch to `zod/mini` if needed |
+| 60 KB gzip budget exceeded by Zod 4 | Med | Measured in T5a: Preact + format module = 31.3 KB gzip (German locale imported alone). Leaves ~29 KB for UI; switch to `zod/mini` only if T16 exceeds the budget |
 | AI-written content has language errors | Med | You review the quiz in T7 before publishing |
 
 ## Human Steps
