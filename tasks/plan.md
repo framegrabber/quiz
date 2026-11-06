@@ -84,13 +84,13 @@ graph TD
 - [x] Review with you
 
 ### Phase 4: Progress and entry points
-- [ ] T12: Storage, mastery, and round selection
-- [ ] T13: Start screen with recent sources
-- [ ] T14: Overview controls and share link
-- [ ] T15: Progress export and import
+- [x] T12: Storage, mastery, and round selection
+- [x] T13: Start screen with recent sources
+- [x] T14: Overview controls and share link
+- [x] T15: Progress export and import
 
 ### Checkpoint D: Feature complete
-- [ ] Success criteria 2, 5–9, 17, 18 of the spec demonstrably met
+- [x] Success criteria 2, 5–9, 17, 18 of the spec demonstrably met
 - [ ] Review with you
 
 ### Phase 5: Release

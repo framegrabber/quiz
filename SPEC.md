@@ -197,8 +197,8 @@ Any asset path added in later types (images, GeoJSON for `map`/`flag` in v2) res
 - While loading, the Overview shows a placeholder layout of its final structure (no spinner, no layout shift when content arrives); error screens offer "Erneut versuchen" and "Zur Startseite".
 
 ### Screens
-1. **Start:** URL input ("Quiz-Link einfügen"), recent sources (title, last used, mastered x/y), remove entry, export/import progress. **First visit (no recent sources):** short explanation of what the app does and where quiz links come from, URL input focused.
-2. **Overview:** title, subject/source, categories with mastered x/y and "Alle", round size picker (5 / 10 / 20 / Alle), Start, Link teilen. **All mastered (in the selection):** "Alles gemeistert" message; Start remains available as a review round.
+1. **Start:** URL input ("Quiz-Link einfügen"; accepts a quiz file URL or a full app link with `#src=`), recent sources (title, last used, mastered x/y; remove after confirmation, progress is kept), export/import progress. **First visit (no recent sources):** short explanation of what the app does and where quiz links come from, URL input focused.
+2. **Overview:** "‹ Meine Quizze" back to Start, title, subject/source, category toggles ("Alle" plus one per category, each with mastered x/y), round size picker (5 / 10 / 20 / Alle, plus a non-standard size from the link or quiz), Start, Link teilen. **All mastered (in the selection):** "Alles gemeistert" message; Start remains available as a review round.
 3. **Round:** question k/N, question UI, feedback (correct/incorrect, correct solution, explanation), "Weiter".
 4. **Result:** score x/N, list of wrong questions with solutions, mastery change for the round, "Neue Runde", "Zur Übersicht". **Perfect round:** a distinct message instead of an empty mistakes list.
 
