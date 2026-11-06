@@ -67,7 +67,7 @@ Semantic tokens with a light and a dark palette (`prefers-color-scheme`). Ratios
 
 **Decision: (b) each question renders its own text field; the Round focuses the next question's first field right after it renders**, inside the same Return keypress or "Weiter" tap. Question components stay independent; no shared, round-owned field.
 
-Evidence (iOS Simulator, iOS 26.3, Safari, software keyboard, dev spike `#spike-a`/`#spike-b`, automated with AXe taps on the on-screen keys):
+Evidence (iOS Simulator, iOS 26.3, Safari, software keyboard, temporary dev spike pages removed in T9, automated with AXe taps on the on-screen keys):
 
 | Transition | (a) reused field | (b) new field |
 |---|---|---|
