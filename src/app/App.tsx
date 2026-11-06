@@ -2,7 +2,7 @@ import { useEffect, useState } from "preact/hooks";
 import { parseHash } from "./hash.ts";
 import { loadQuiz, type LoadResult } from "./load.ts";
 import { ErrorScreen } from "./ErrorScreen.tsx";
-import { Overview } from "./Overview.tsx";
+import { OverviewPlaceholder } from "./Overview.tsx";
 import { QuizScreen } from "./QuizScreen.tsx";
 import { Start } from "./Start.tsx";
 
@@ -42,7 +42,7 @@ export function App() {
   if (!params.src) return <Start />;
 
   const result = load?.src === params.src ? load.result : undefined;
-  if (!result) return <Overview quiz={null} onStart={() => {}} />;
+  if (!result) return <OverviewPlaceholder />;
   if (!result.ok) {
     return (
       <ErrorScreen

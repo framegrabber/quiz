@@ -4,7 +4,7 @@ import {
   countMastered,
   type QuizProgress,
 } from "../engine/mastery.ts";
-import { selectRound } from "../engine/selectRound.ts";
+import { selectRound, type RoundSize } from "../engine/selectRound.ts";
 import { questionId } from "../format/questionId.ts";
 import type { Quiz } from "../format/schema.ts";
 import type { Question } from "../question-types/definitions.ts";
@@ -15,7 +15,11 @@ import type { HashParams } from "./hash.ts";
 import { Overview } from "./Overview.tsx";
 import { Result } from "./Result.tsx";
 import { Round, type AnsweredQuestion } from "./round/Round.tsx";
-import { resolveCategories, resolveRoundSize } from "./roundSettings.ts";
+import {
+  buildHash,
+  resolveCategories,
+  resolveRoundSize,
+} from "./roundSettings.ts";
 
 /** A round lives in its own history entry, so back/swipe-back returns to the overview. */
 const ROUND_STATE = { quizRound: true };
@@ -45,14 +49,26 @@ export function QuizScreen({ src, quiz, params }: QuizScreenProps) {
     () => resolveCategories(params.cats, quiz),
     [quiz],
   );
-  const [categories] = useState(linkCategories.selected);
-  const [size] = useState(() =>
+  const [categories, setCategories] = useState(linkCategories.selected);
+  const [size, setSize] = useState<RoundSize>(() =>
     resolveRoundSize(
       params.n,
       loadSources().find((s) => s.url === src)?.roundSize,
       quiz.roundSize,
     ),
   );
+
+  // The URL always reflects the overview state, so it is the share link (no new history entry).
+  useEffect(() => {
+    history.replaceState(history.state, "", buildHash(src, categories, size));
+  }, [categories, size]);
+
+  const changeSize = (next: RoundSize) => {
+    setSize(next);
+    saveSources(
+      upsertSource(loadSources(), { url: src, roundSize: next }, Date.now()),
+    );
+  };
   const [play, setPlay] = useState<Play | null>(null);
 
   const pool = categories
@@ -156,7 +172,10 @@ export function QuizScreen({ src, quiz, params }: QuizScreenProps) {
       quiz={quiz}
       progress={progress}
       selected={categories}
+      size={size}
       notices={notices}
+      onSelectedChange={setCategories}
+      onSizeChange={changeSize}
       onStart={startRound}
     />
   );

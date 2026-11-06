@@ -34,9 +34,9 @@ function playCorrectRound() {
 
 test("three correct rounds master a question; progress survives a reload", async () => {
   show();
-  const total = (text: string) =>
-    screen.getByText((_, el) => el?.tagName === "P" && el.textContent === text);
-  expect(total("0 / 1 gemeistert")).toBeTruthy();
+  const all = () =>
+    screen.getByRole("button", { name: /^Alle.*gemeistert$/ }).textContent;
+  expect(all()).toContain("0 / 1");
   playCorrectRound();
   expect(screen.getByText("Gemeistert: 0 / 1")).toBeTruthy();
   fireEvent.click(screen.getByRole("button", { name: "Neue Runde" }));
