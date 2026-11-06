@@ -15,7 +15,8 @@
     "typecheck": "tsc --noEmit",
     "format": "prettier --write .",
     "schema": "node scripts/schema.ts",
-    "validate": "node scripts/validate.ts"
+    "validate": "node scripts/validate.ts",
+    "icons": "node scripts/icons.ts"
   },
   "dependencies": {
     "preact": "^11.2.0",
