@@ -105,6 +105,16 @@ button:disabled {
   background: var(--color-sunken);
 }
 
+.text-input[data-state="correct"] {
+  border-color: var(--color-correct);
+  box-shadow: inset 0 0 0 1px var(--color-correct);
+}
+
+.text-input[data-state="incorrect"] {
+  border-color: var(--color-incorrect);
+  box-shadow: inset 0 0 0 1px var(--color-incorrect);
+}
+
 /* Answer option (choice) */
 .option {
   display: flex;
