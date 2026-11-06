@@ -15,7 +15,7 @@ Spec: [`SPEC.md`](../SPEC.md) · Plan: [`plan.md`](plan.md). Standard gate for e
 - [ ] `index.html` with `lang="de"` and `<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">`; app renders a placeholder screen
 
 **Verification:**
-- [ ] `npm run dev` serves `http://localhost:5173/quiz/`
+- [ ] `npm run dev` serves `http://localhost:5180/quiz/` (dedicated port; 5173 is used by other local projects)
 - [ ] `npm run build` produces `dist/`; `npm test` runs Vitest with happy-dom (passes with no tests); `axe-core` installed with a `expectNoAxeViolations(container)` test helper
 
 **Dependencies:** None

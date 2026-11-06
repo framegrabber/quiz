@@ -38,9 +38,9 @@ Content repo: `framegrabber/quiz-content`, served via Pages at `https://framegra
 
 ```
 Install:   npm ci
-Dev:       npm run dev                    # vite, http://localhost:5173/quiz/
+Dev:       npm run dev                    # vite, http://localhost:5180/quiz/ (also on the LAN for devices)
 Build:     npm run build                  # npm run schema && tsc --noEmit && vite build → dist/
-Preview:   npm run preview
+Preview:   npm run preview                # http://localhost:5181/quiz/
 Test:      npm test                       # vitest run
 Watch:     npm run test:watch
 Typecheck: npm run typecheck              # tsc --noEmit

@@ -1,0 +1,181 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-family);
+  font-size: var(--font-size-m);
+  line-height: var(--line-height-normal);
+  overflow-wrap: break-word;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+}
+
+h1 {
+  font-size: var(--font-size-xl);
+  line-height: var(--line-height-tight);
+}
+
+h2 {
+  font-size: var(--font-size-l);
+  line-height: var(--line-height-tight);
+}
+
+button,
+input {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  touch-action: manipulation;
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: default;
+}
+
+:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: var(--focus-offset);
+}
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-height: var(--tap-target);
+  padding: var(--space-2) var(--space-4);
+  border: 1px solid transparent;
+  border-radius: var(--radius-m);
+  font-weight: var(--font-weight-strong);
+  transition: background-color var(--duration);
+}
+
+.btn-primary {
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+}
+
+.btn-primary:disabled {
+  background: var(--color-sunken);
+  color: var(--color-text-muted);
+}
+
+.btn-secondary {
+  background: var(--color-surface);
+  border-color: var(--color-border-strong);
+  color: var(--color-accent);
+}
+
+.btn-block {
+  width: 100%;
+}
+
+/* Text input: >= 16px prevents iOS zoom on focus */
+.text-input {
+  width: 100%;
+  min-height: var(--tap-target);
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-s);
+  background: var(--color-surface);
+  font-size: max(var(--font-size-m), 16px);
+}
+
+.text-input[readonly] {
+  background: var(--color-sunken);
+}
+
+/* Answer option (choice) */
+.option {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  width: 100%;
+  min-height: var(--tap-target);
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-m);
+  background: var(--color-surface);
+  text-align: start;
+}
+
+.option[aria-pressed="true"] {
+  border-color: var(--color-accent);
+  background: var(--color-accent-subtle);
+  box-shadow: inset 0 0 0 1px var(--color-accent);
+}
+
+.option[data-state="correct"] {
+  border-color: var(--color-correct);
+  background: var(--color-correct-subtle);
+}
+
+.option[data-state="incorrect"] {
+  border-color: var(--color-incorrect);
+  background: var(--color-incorrect-subtle);
+}
+
+.option-mark {
+  margin-inline-start: auto;
+  display: inline-flex;
+}
+
+/* Feedback text colors */
+.text-correct {
+  color: var(--color-correct);
+}
+
+.text-incorrect {
+  color: var(--color-incorrect);
+}
+
+.text-muted {
+  color: var(--color-text-muted);
+}
+
+/* Quiz content: hyphenation follows the content language */
+.content {
+  hyphens: auto;
+}
+
+.wrap-anywhere {
+  overflow-wrap: anywhere;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0s !important;
+    animation-duration: 0s !important;
+  }
+}
