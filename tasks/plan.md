@@ -69,8 +69,8 @@ graph TD
 - [x] T7: Possessive determiners quiz and `quiz-content` CI (parallel with Phase 3)
 
 ### Checkpoint B: Contract
-- [ ] Possessives quiz validates locally and in `quiz-content` CI; an invalid copy fails CI
-- [ ] `docs/quiz-format.md` reviewed by you (it is the contract for AI authoring)
+- [x] Possessives quiz validates locally and in `quiz-content` CI; an invalid copy fails CI
+- [x] `docs/quiz-format.md` reviewed by you (it is the contract for AI authoring)
 
 ### Phase 3: Playable slices
 - [ ] T8: Loading, hash params, error screens

@@ -1,14 +1,7 @@
 import { render } from "preact";
 import "./styles/tokens.css";
 import "./styles/base.css";
-
-function App() {
-  return (
-    <main>
-      <h1>Quiz</h1>
-    </main>
-  );
-}
+import { App } from "./app/App.tsx";
 
 const root = document.getElementById("app")!;
 

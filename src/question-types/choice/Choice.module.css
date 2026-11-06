@@ -1,0 +1,9 @@
+.choice {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.options {
+  display: grid;
+  gap: var(--space-2);
+}
