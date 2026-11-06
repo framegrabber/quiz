@@ -4,3 +4,4 @@ dist/
 *.local
 .shots/
 public/schema/
+public/dev-fixtures/

@@ -1,4 +1,7 @@
-import { answerInputAttributes } from "../../ui/answerInput.ts";
+import {
+  answerInputAttributes,
+  revealAfterKeyboard,
+} from "../../ui/answerInput.ts";
 import { Prompt } from "../../ui/Prompt.tsx";
 import type { QuestionProps } from "../props.ts";
 import type { InputQuestion } from "./schema.ts";
@@ -27,6 +30,7 @@ export function Input({
           const value = event.currentTarget.value;
           onChange(value.trim() ? value : null);
         }}
+        onFocus={(event) => revealAfterKeyboard(event.currentTarget)}
       />
     </div>
   );

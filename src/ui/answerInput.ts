@@ -6,3 +6,13 @@ export const answerInputAttributes = {
   autocomplete: "off",
   spellcheck: false,
 } as const;
+
+/** Keeps a focused field visible once the on-screen keyboard has resized the viewport. */
+export function revealAfterKeyboard(field: HTMLElement): void {
+  field.scrollIntoView({ block: "nearest" });
+  window.visualViewport?.addEventListener(
+    "resize",
+    () => field.scrollIntoView({ block: "nearest" }),
+    { once: true },
+  );
+}

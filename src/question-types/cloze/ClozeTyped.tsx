@@ -1,6 +1,9 @@
 import { Fragment } from "preact";
 import { useRef } from "preact/hooks";
-import { answerInputAttributes } from "../../ui/answerInput.ts";
+import {
+  answerInputAttributes,
+  revealAfterKeyboard,
+} from "../../ui/answerInput.ts";
 import type { QuestionProps } from "../props.ts";
 import type { ClozePart } from "./parse.ts";
 import type { ClozeQuestion } from "./schema.ts";
@@ -10,16 +13,6 @@ import styles from "./Cloze.module.css";
 type Props = QuestionProps<ClozeQuestion, readonly string[]> & {
   parts: ClozePart[];
 };
-
-/** Brings the focused gap into view once the on-screen keyboard has resized the viewport. */
-function revealAfterKeyboard(field: HTMLElement) {
-  field.scrollIntoView({ block: "nearest" });
-  window.visualViewport?.addEventListener(
-    "resize",
-    () => field.scrollIntoView({ block: "nearest" }),
-    { once: true },
-  );
-}
 
 /** One inline field per gap. Return moves to the next gap; on the last gap it bubbles to the Round. */
 export function ClozeTyped({ parts, phase, result, onChange }: Props) {

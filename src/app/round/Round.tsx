@@ -46,20 +46,24 @@ export function Round({
   const [answered, setAnswered] = useState<AnsweredQuestion[]>([]);
   const contentRef = useRef<HTMLDivElement>(null);
   const nextRef = useRef<HTMLButtonElement>(null);
+  const explanationRef = useRef<HTMLParagraphElement>(null);
   const question = questions[index]!;
   const isLast = index === questions.length - 1;
 
   // New question: focus its first control right after render, still inside the user's tap/keypress.
   useLayoutEffect(() => {
+    contentRef.current?.closest("main")?.scrollTo(0, 0);
     const first =
       contentRef.current?.querySelector<HTMLElement>("input, button");
     first?.focus({ preventScroll: true });
   }, [index]);
 
-  // Feedback: a text field keeps focus (keyboard stays open); otherwise focus moves to "Weiter".
+  // Feedback: a text field keeps focus (keyboard stays open); otherwise focus moves to "Weiter"
+  // and the explanation, if any, is scrolled into view.
   useLayoutEffect(() => {
-    if (result && !isTextField(document.activeElement))
-      nextRef.current?.focus();
+    if (!result || isTextField(document.activeElement)) return;
+    nextRef.current?.focus();
+    explanationRef.current?.scrollIntoView({ block: "nearest" });
   }, [result]);
 
   const submit = (given: Answer) => {
@@ -139,7 +143,7 @@ export function Round({
           onSubmit={submit}
         />
         {result && question.explanation && (
-          <p class={styles.explanation} lang="de">
+          <p ref={explanationRef} class={styles.explanation} lang="de">
             {question.explanation}
           </p>
         )}

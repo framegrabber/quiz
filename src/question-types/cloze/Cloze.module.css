@@ -1,7 +1,7 @@
 .cloze,
 .bankLayout {
   display: grid;
-  gap: var(--space-4);
+  gap: var(--question-gap, var(--space-4));
 }
 
 .instruction {
