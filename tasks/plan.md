@@ -94,10 +94,10 @@ graph TD
 - [x] Review with you
 
 ### Phase 4b: Statistics (added on request)
-- [ ] T15b: Activity log, per-quiz and overall statistics, "Fehler üben"
+- [x] T15b: Activity log, per-quiz and overall statistics, "Fehler üben"
 
 ### Phase 5: Release
-- [ ] T16: Home-screen icon ("Lernkarten-Stapel", name "Lernquiz") and manifest, final accessibility and responsive sweep, bundle budget
+- [x] T16: Home-screen icon ("Lernkarten-Stapel", name "Lernquiz") and manifest, final accessibility and responsive sweep, bundle budget (VoiceOver pass moves to T17, it needs a person listening)
 - [ ] T17: Release verification on simulator, real iPhone, and Pages
 
 ### Checkpoint E: Complete

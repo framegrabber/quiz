@@ -86,6 +86,16 @@ Rules that make it work:
 - While the keyboard is open (`html[data-keyboard-open]`), the round tightens its vertical rhythm (`--content-padding`, `--question-gap`, `--actions-padding` drop one step) so a 120-character prompt, its field, and the action bar fit above the keyboard on the iPhone SE (verified in T11). A focused field is also scrolled into view after the keyboard resizes the viewport.
 - Notes: the form accessory bar's ✓ ("Fertig") dismisses the keyboard by design; the QuickType suggestion bar still shows with `autocorrect="off"`, typed text is not altered. Confirm on a real iPhone in T17.
 
+## App icon
+
+"Lernkarten-Stapel": three stacked cards with a check mark on the front card, white and two solid blue tints on the accent (`#1d5c9e`). Solid tints instead of opacity, so overlapping cards stay clean. The rounded tile (`public/icons/icon.svg`) is the favicon and the "any" icon; the full-bleed variant with the artwork scaled to 84 % is the maskable and Apple touch icon (iOS rounds the corners itself). Home-screen name: "Lernquiz". Regenerate PNGs with `npm run icons` (needs local Chrome).
+
+## Statistics
+
+- Figures as a three-column definition list (label above value), rows as a bordered list with the value right-aligned.
+- The 7-day chart is an ordered list of bars; each bar has a hidden text alternative ("Freitag, 6. November: 5 Antworten") and the visible weekday short name. Empty days show a thin neutral bar, never nothing.
+- No points, badges, or celebration animations; the streak is a plain number.
+
 ## Rejected patterns
 
 Gradients · heavy or layered shadows · card grids · purple/indigo default palettes · emoji as UI icons · oversized uniform padding · spinners for content loading · color as the only signal · disabling pinch zoom · drag and drop for answers.
