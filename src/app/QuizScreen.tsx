@@ -5,9 +5,12 @@ import {
   type QuizProgress,
 } from "../engine/mastery.ts";
 import { selectRound, type RoundSize } from "../engine/selectRound.ts";
+import { shuffle } from "../engine/shuffle.ts";
+import { missedQuestions } from "../engine/stats.ts";
 import { questionId } from "../format/questionId.ts";
 import type { Quiz } from "../format/schema.ts";
 import type { Question } from "../question-types/definitions.ts";
+import { countRound, loadRounds, recordActivity } from "../storage/activity.ts";
 import { loadProgress, saveProgress } from "../storage/progress.ts";
 import { loadSources, saveSources, upsertSource } from "../storage/sources.ts";
 import { requestPersistence } from "../storage/store.ts";
@@ -70,6 +73,7 @@ export function QuizScreen({ src, quiz, params }: QuizScreenProps) {
     );
   };
   const [play, setPlay] = useState<Play | null>(null);
+  const [rounds, setRounds] = useState(() => loadRounds(src));
 
   const pool = categories
     ? quiz.questions.filter((q) => categories.includes(q.category))
@@ -108,19 +112,41 @@ export function QuizScreen({ src, quiz, params }: QuizScreenProps) {
     setProgress(next);
     saveProgress(src, next);
     rememberSource(next);
+    recordActivity({ answers: 1, correct: result.correct ? 1 : 0 });
   };
 
-  const newRound = () =>
+  const finishRound = (
+    answered: AnsweredQuestion[],
+    masteredBefore: number,
+  ) => {
+    requestPersistence();
+    countRound(src);
+    recordActivity({ rounds: 1 });
+    setRounds(loadRounds(src));
+    setPlay({ phase: "result", answered, masteredBefore });
+  };
+
+  const limit = (questions: Question[]) =>
+    size === "all" ? questions : questions.slice(0, size);
+  const newRound = (questions = selectRound(pool, progressRef.current, size)) =>
     setPlay({
       phase: "round",
-      questions: selectRound(pool, progressRef.current, size),
+      questions,
       id: Date.now(),
       masteredBefore: countMastered(pool, progressRef.current),
     });
-  const startRound = () => {
+  const startRound = (questions?: Question[]) => {
     history.pushState(ROUND_STATE, "");
-    newRound();
+    newRound(questions);
   };
+  const practiceMistakes = () =>
+    startRound(
+      shuffle(
+        limit(
+          missedQuestions(pool, progressRef.current).map((m) => m.question),
+        ),
+      ),
+    );
   // Leave via history so the round entry is popped; popstate then shows the overview.
   const leaveRound = () => history.back();
 
@@ -131,14 +157,7 @@ export function QuizScreen({ src, quiz, params }: QuizScreenProps) {
         questions={play.questions}
         language={quiz.language}
         onAnswer={recordAnswer}
-        onFinish={(answered) => {
-          requestPersistence();
-          setPlay({
-            phase: "result",
-            answered,
-            masteredBefore: play.masteredBefore,
-          });
-        }}
+        onFinish={(answered) => finishRound(answered, play.masteredBefore)}
         onExit={leaveRound}
       />
     );
@@ -153,7 +172,7 @@ export function QuizScreen({ src, quiz, params }: QuizScreenProps) {
           after: countMastered(pool, progress),
           total: pool.length,
         }}
-        onAgain={newRound}
+        onAgain={() => newRound()}
         onOverview={leaveRound}
       />
     );
@@ -176,7 +195,9 @@ export function QuizScreen({ src, quiz, params }: QuizScreenProps) {
       notices={notices}
       onSelectedChange={setCategories}
       onSizeChange={changeSize}
-      onStart={startRound}
+      rounds={rounds}
+      onStart={() => startRound()}
+      onPracticeMistakes={practiceMistakes}
     />
   );
 }

@@ -3,6 +3,7 @@ import type { RoundSize } from "../engine/selectRound.ts";
 import type { Quiz } from "../format/schema.ts";
 import { Page } from "../ui/Page.tsx";
 import { CategoryPicker, RoundSizePicker } from "./OverviewControls.tsx";
+import { QuizStats } from "./QuizStats.tsx";
 import { ShareLink } from "./ShareLink.tsx";
 import styles from "./Overview.module.css";
 
@@ -15,7 +16,10 @@ interface OverviewProps {
   notices: string[];
   onSelectedChange: (selected: string[] | null) => void;
   onSizeChange: (size: RoundSize) => void;
+  /** Finished rounds of this quiz. */
+  rounds: number;
   onStart: () => void;
+  onPracticeMistakes: () => void;
 }
 
 export function Overview(props: OverviewProps) {
@@ -71,6 +75,13 @@ export function Overview(props: OverviewProps) {
         onChange={props.onSelectedChange}
       />
       <RoundSizePicker value={props.size} onChange={props.onSizeChange} />
+      <QuizStats
+        quiz={quiz}
+        pool={pool}
+        progress={progress}
+        rounds={props.rounds}
+        onPracticeMistakes={props.onPracticeMistakes}
+      />
     </Page>
   );
 }
