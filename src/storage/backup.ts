@@ -1,9 +1,24 @@
 import { z } from "zod";
+import {
+  ACTIVITY_KEY,
+  ROUNDS_PREFIX,
+  activitySchema,
+  roundsSchema,
+} from "./activity.ts";
 import { quizProgressSchema } from "./progress.ts";
 import { SOURCES_KEY, sourcesSchema } from "./sources.ts";
 import { PREFIX, appKeys, removeValue, writeValue } from "./store.ts";
 
 const PROGRESS_PREFIX = `${PREFIX}progress:`;
+
+/** Schema of a stored app key; null for keys the app does not know. */
+function schemaFor(key: string): z.ZodType | null {
+  if (key === SOURCES_KEY) return sourcesSchema;
+  if (key === ACTIVITY_KEY) return activitySchema;
+  if (key.startsWith(PROGRESS_PREFIX)) return quizProgressSchema;
+  if (key.startsWith(ROUNDS_PREFIX)) return roundsSchema;
+  return null;
+}
 
 const backupSchema = z
   .object({
@@ -13,13 +28,7 @@ const backupSchema = z
   })
   .superRefine((backup, ctx) => {
     for (const [key, value] of Object.entries(backup.entries)) {
-      const schema =
-        key === SOURCES_KEY
-          ? sourcesSchema
-          : key.startsWith(PROGRESS_PREFIX)
-            ? quizProgressSchema
-            : null;
-      if (!schema?.safeParse(value).success) {
+      if (!schemaFor(key)?.safeParse(value).success) {
         ctx.addIssue({
           code: "custom",
           path: ["entries", key],

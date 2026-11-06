@@ -6,6 +6,12 @@ import {
   restoreBackup,
 } from "./backup.ts";
 import { loadProgress, saveProgress } from "./progress.ts";
+import {
+  countRound,
+  loadActivity,
+  loadRounds,
+  recordActivity,
+} from "./activity.ts";
 import { loadSources, saveSources } from "./sources.ts";
 
 beforeEach(() => localStorage.clear());
@@ -24,23 +30,32 @@ function seed() {
       roundSize: 5,
     },
   ]);
+  recordActivity({ answers: 4, correct: 3, rounds: 1 });
+  countRound(URL_A);
   localStorage.setItem("other-app", "keep me");
 }
 
 test("export → clear → import restores identical app data and leaves other keys alone", () => {
   seed();
   const text = JSON.stringify(createBackup(new Date("2026-11-06T10:00:00Z")));
-  const before = { progress: loadProgress(URL_A), sources: loadSources() };
+  const snapshot = () => ({
+    progress: loadProgress(URL_A),
+    sources: loadSources(),
+    activity: loadActivity(),
+    rounds: loadRounds(URL_A),
+  });
+  const before = snapshot();
+  expect(before.rounds).toBe(1);
 
   saveProgress(URL_A, {});
   saveSources([]);
+  localStorage.clear();
+  localStorage.setItem("other-app", "keep me");
   const parsed = parseBackup(text);
   expect(parsed.ok).toBe(true);
   if (parsed.ok) expect(restoreBackup(parsed.backup)).toBe(true);
 
-  expect({ progress: loadProgress(URL_A), sources: loadSources() }).toEqual(
-    before,
-  );
+  expect(snapshot()).toEqual(before);
   expect(localStorage.getItem("other-app")).toBe("keep me");
 });
 
