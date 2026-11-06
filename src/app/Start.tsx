@@ -8,6 +8,8 @@ import { Page } from "../ui/Page.tsx";
 import { CrossIcon } from "../ui/icons.tsx";
 import { parseHash } from "./hash.ts";
 import { BackupControls } from "./BackupControls.tsx";
+import { OverallStats } from "./OverallStats.tsx";
+import { loadActivity } from "../storage/activity.ts";
 import styles from "./Start.module.css";
 
 /** Accepts a quiz file URL or a full app link (…#src=…); returns the hash to open, or null. */
@@ -35,6 +37,7 @@ export function formatLastUsed(
 
 export function Start() {
   const [sources, setSources] = useState<SourceEntry[]>(loadSources);
+  const [activity, setActivity] = useState(loadActivity);
   const [link, setLink] = useState("");
   const [error, setError] = useState<string | null>(null);
   const fieldRef = useRef<HTMLInputElement>(null);
@@ -139,7 +142,13 @@ export function Start() {
           </ul>
         </section>
       )}
-      <BackupControls onRestored={() => setSources(loadSources())} />
+      <OverallStats activity={activity} />
+      <BackupControls
+        onRestored={() => {
+          setSources(loadSources());
+          setActivity(loadActivity());
+        }}
+      />
     </Page>
   );
 }
