@@ -28,6 +28,28 @@
       "prompt": "Which words are possessive determiners?",
       "options": ["my", "me", "our", "us"],
       "answer": ["my", "our"]
+    },
+    {
+      "id": "pd-003",
+      "type": "input",
+      "category": "forms",
+      "prompt": "Tom and Lisa love ___ dog. (they)",
+      "answer": "their"
+    },
+    {
+      "id": "pd-004",
+      "type": "cloze",
+      "category": "forms",
+      "prompt": "Ergänze die Begleiter.",
+      "text": "I like {my} bike, but {her} bike is faster.",
+      "distractors": ["his", "your"]
+    },
+    {
+      "id": "pd-005",
+      "type": "cloze",
+      "category": "its",
+      "text": "{Its|It's} hard to say. The dog wags {its} tail.",
+      "mode": "type"
     }
   ]
 }

@@ -104,6 +104,36 @@ describe("parseQuiz", () => {
       "",
     ],
     [
+      "empty accept entry",
+      (d) => (d.questions[2].accept = ["their", " "]),
+      "questions[2].accept[1]",
+      "leer",
+    ],
+    [
+      "input field from another type",
+      (d) => (d.questions[2].options = ["their"]),
+      "questions[2]",
+      "options",
+    ],
+    [
+      "cloze without a gap",
+      (d) => (d.questions[3].text = "No gaps here."),
+      "questions[3].text",
+      "Zeichen 1: Der Text enthält keine Lücke",
+    ],
+    [
+      "cloze with an unclosed gap",
+      (d) => (d.questions[3].text = "I like {my bike."),
+      "questions[3].text",
+      "Zeichen 8: Lücke ohne schließende }",
+    ],
+    [
+      "unknown cloze mode",
+      (d) => (d.questions[3].mode = "drag"),
+      "questions[3].mode",
+      "",
+    ],
+    [
       "one option only",
       (d) => (d.questions[0].options = ["its"]),
       "questions[0].options",

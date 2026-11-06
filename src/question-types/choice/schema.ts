@@ -11,7 +11,9 @@ export const choiceSchema = z
     type: z.literal("choice"),
     prompt: textSchema,
     options: z.array(textSchema).min(2).max(8),
-    answer: z.union([textSchema, z.array(textSchema).min(1)]),
+    answer: z.union([textSchema, z.array(textSchema).min(1)], {
+      error: "Muss ein Text oder eine Liste von Texten sein",
+    }),
   })
   .superRefine((q, ctx) => {
     if (hasDuplicates(q.options)) {

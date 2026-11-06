@@ -3,6 +3,13 @@ import de from "zod/v4/locales/de.js";
 
 // German messages for built-in Zod issues (unknown keys, wrong types, ...). Import only this locale.
 z.config(de());
+// Clearer than "erwartet string, erhalten undefined" for authors.
+z.config({
+  customError: (issue) =>
+    issue.code === "invalid_type" && issue.input === undefined
+      ? "Pflichtfeld fehlt"
+      : undefined,
+});
 
 export const idSchema = z
   .string()
