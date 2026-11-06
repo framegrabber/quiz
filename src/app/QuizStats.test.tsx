@@ -91,7 +91,6 @@ test("accuracy, rounds, answers, most-missed list, and a mistakes-only round", a
   });
 
   fireEvent.click(screen.getByRole("button", { name: "Zur Übersicht" }));
-  history.back();
   await screen.findByRole("region", { name: "Statistik" });
   expect(stats().getByText("Runden").nextElementSibling?.textContent).toBe("1");
 });
