@@ -309,18 +309,39 @@ Spec: [`SPEC.md`](../SPEC.md) · Plan: [`plan.md`](plan.md). Standard gate for e
 **Estimated scope:** S
 
 ### Checkpoint D: Feature complete
-- [ ] Spec success criteria 2, 5–9, 17, 18 met
-- [ ] Review with Felix
+- [x] Spec success criteria 2, 5–9, 17, 18 met
+- [x] Review with Felix
+
+---
+
+## Phase 4b: Statistics (added on request)
+
+## T15b: Activity log, per-quiz and overall statistics, "Fehler üben"
+**Description:** SPEC "Statistics": accuracy, rounds, answers, most-missed questions with a practice round per quiz; streak, last 7 days, and totals on the start screen.
+
+**Acceptance criteria:**
+- [ ] `quiz:v1:activity` (per local day: answers, correct, rounds; > 60 days dropped) and `quiz:v1:rounds:<url>` written on answer / round end; included in export/import validation
+- [ ] Pure stats functions: accuracy overall and per category, most-missed (≤ 5, not mastered, wrong desc), streak (ending today or yesterday), last 7 days series
+- [ ] Overview "Statistik" section for the current selection with "Fehler üben" (hidden without missed questions); Start "Deine Statistik" section once there is activity, with an accessible 7-day bar chart
+
+**Verification:**
+- [ ] Unit tests for the stats functions (boundaries: no answers, streak gaps, day rollover, pruning)
+- [ ] Component tests with axe: overview stats + Fehler üben round; start screen stats; backup round trip includes activity
+- [ ] Simulator (SE, light + dark): overview and start screen with stats
+
+**Dependencies:** T12–T15
+**Files likely touched:** `src/storage/activity.ts`, `src/engine/stats.ts` (+ tests), `src/app/QuizStats.tsx`, `src/app/OverallStats.tsx`, `src/app/QuizScreen.tsx`, `src/storage/backup.ts`
+**Estimated scope:** M
 
 ---
 
 ## Phase 5: Release
 
-## T16: Home-screen manifest, final accessibility and responsive check, bundle budget
+## T16: Home-screen icon and manifest, final accessibility and responsive check, bundle budget
 **Description:** Finish cross-cutting requirements. Accessibility and states are built per task; this is the final sweep, not where they get done.
 
 **Acceptance criteria:**
-- [ ] `manifest.webmanifest` + icons (light/dark-safe); app can be added to the iPhone home screen and starts in standalone mode
+- [ ] Icon "Lernkarten-Stapel" (`public/icons/icon.svg` → PNG 180/192/512/512-maskable via `npm run icons`), `manifest.webmanifest` with name/short_name "Lernquiz", `apple-touch-icon`, `apple-mobile-web-app-title`; starts standalone from the home screen
 - [ ] Every screen checked at 320/768/1024/1440 px, light and dark; contrast ratios from `docs/design.md` hold on real screens; VoiceOver (macOS Safari) completes one round per type
 - [ ] Production JS ≤ 60 KB gzip (switch to `zod/mini` if over)
 

@@ -226,14 +226,31 @@ Nothing else: no fuzzy matching, no stripping punctuation. `it's` ≠ `its`.
 
 ### Storage
 - Keys prefixed `quiz:v1:` (the origin `framegrabber.github.io` is shared with other Pages projects, e.g. geografie-quiz).
-  - `quiz:v1:sources` → `{ url, title, lastUsed, roundSize? }[]`, most recent first, max 20.
+  - `quiz:v1:sources` → `{ url, title, lastUsed, total, mastered, roundSize? }[]`, most recent first, max 20.
   - `quiz:v1:progress:<url>` → `{ [questionId]: { box, right, wrong, lastSeen } }`.
+  - `quiz:v1:rounds:<url>` → `{ rounds }`: finished rounds per quiz.
+  - `quiz:v1:activity` → `{ [YYYY-MM-DD local date]: { answers, correct, rounds } }` across all quizzes; days older than 60 days are dropped on write.
 - Progress for questions no longer in the file is kept and ignored.
 - `navigator.storage.persist()` requested once (best effort).
 - **Export:** downloads `quiz-fortschritt-YYYY-MM-DD.json` with all `quiz:v1:*` entries plus `{ exportVersion: 1 }`. **Import:** file picker, validates, confirms "Vorhandenen Fortschritt ersetzen?", replaces. No merge.
 - Corrupt storage values → that entry is reset with a console warning; the app keeps working.
 - **Storage unavailable** (write throws, e.g. quota or restricted mode) → persistent banner "Fortschritt wird nicht gespeichert"; quizzes stay playable.
-- Web app manifest + icon so the app can be added to the home screen. No service worker, no offline mode in v1.
+- Web app manifest + icons so the app can be added to the home screen as **"Lernquiz"**. No service worker, no offline mode in v1.
+
+### Statistics
+- **Per quiz** (section "Statistik" on the Overview, for the current category selection):
+  - Trefferquote: correct / all answers, overall and per category (categories without answers show "–").
+  - Runden (finished rounds of this quiz) and Antworten (all answers given).
+  - Häufigste Fehler: up to 5 questions with ≥ 1 wrong answer that are not mastered, most wrong answers first; each shows the question and "n× falsch".
+  - "Fehler üben": starts a round with those not-yet-mastered, ever-missed questions (up to the selected round size); hidden when there are none.
+- **Overall** (section on Start, shown once there is any activity):
+  - Lerntage in Folge: consecutive local days with ≥ 1 answer, ending today, or yesterday if nothing was practised yet today.
+  - Letzte 7 Tage: answers per day as a bar chart with a text alternative per day.
+  - Antworten, Trefferquote, and Runden over all quizzes (from the activity log, so removed quizzes still count).
+- Activity is recorded per answer (answers, correct) and per finished round (rounds). Export/import include `rounds` and `activity` keys.
+
+### Home-screen icon
+- Logo "Lernkarten-Stapel": three stacked cards with a check mark on the front card, white on the accent blue, rounded square. Source `public/icons/icon.svg`; PNGs 180 (apple-touch-icon), 192, 512, and 512 maskable (content within the 80 % safe zone), rendered by `npm run icons` with local Chrome and committed.
 
 ### Security
 - Quiz content is untrusted. It is validated at load and rendered as text only (no `dangerouslySetInnerHTML`, no HTML/Markdown in v1).
@@ -359,15 +376,17 @@ export interface QuestionProps<Q, A> {
 16. Every screen works in light and dark mode with the contrast rules met, and at 320/768/1024/1440 px wide; on iPad the content stays a centered column.
 17. Swipe-back during a round returns to the Overview; the URL on the Overview always reflects the current category and round size.
 18. Loading, first-visit, all-mastered, perfect-round, storage-unavailable, and clipboard-blocked states each render their specified content.
+19. The overview shows accuracy (overall and per category), rounds, answers, and up to 5 most-missed questions; "Fehler üben" plays only those. The start screen shows the learning-day streak, the last 7 days, and overall totals. Export/import carry the statistics.
+20. Added to the iPhone home screen, the app shows the "Lernquiz" name and the card-stack icon, and starts standalone.
 
 ## Out of Scope for v1
 
 - `map` and `flag` question types and the geografie-quiz converter (v2). Planned mapping: `multiple` → `choice`, `fillblanks` → `cloze` (`_` + `blanks[]` → `{answer}`), `flag-to-country` / `country-to-flag` → `flag`, `map` → `map` with map config (GeoJSON URL, projection, name property, filter) moving from `mapConfig.js` into the quiz document.
 - Library manifest / browse screen.
-- QR code for share links, offline mode/service worker, i18n, Markdown in questions, points/streaks (score is "x/N richtig"), teacher dashboard, accounts/sync.
+- QR code for share links, offline mode/service worker, i18n, Markdown in questions, points, teacher dashboard, accounts/sync.
 
 ## Resolved Decisions
 
 1. Green Line unit: not pinned; `source` is `"Green Line 1 Bayern"` without a unit.
 2. Separate home-screen storage on iOS: accepted; export/import is the bridge, no install warning.
-3. Scoring: "x/N richtig" only, no points or streaks in v1.
+3. Scoring: "x/N richtig" per round, no points. Statistics (accuracy, rounds, most-missed questions, learning-day streak, last 7 days) were added on request before release, see "Statistics".

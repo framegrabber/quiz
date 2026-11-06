@@ -91,14 +91,17 @@ graph TD
 
 ### Checkpoint D: Feature complete
 - [x] Success criteria 2, 5–9, 17, 18 of the spec demonstrably met
-- [ ] Review with you
+- [x] Review with you
+
+### Phase 4b: Statistics (added on request)
+- [ ] T15b: Activity log, per-quiz and overall statistics, "Fehler üben"
 
 ### Phase 5: Release
-- [ ] T16: Home-screen manifest, final accessibility and responsive sweep, bundle budget
+- [ ] T16: Home-screen icon ("Lernkarten-Stapel", name "Lernquiz") and manifest, final accessibility and responsive sweep, bundle budget
 - [ ] T17: Release verification on simulator, real iPhone, and Pages
 
 ### Checkpoint E: Complete
-- [ ] All 18 spec success criteria met
+- [ ] All 20 spec success criteria met
 - [ ] Ready to share with the class
 
 ## Parallelization
