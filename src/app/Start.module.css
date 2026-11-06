@@ -64,3 +64,9 @@
   color: var(--color-text-muted);
   border-radius: 0 var(--radius-m) var(--radius-m) 0;
 }
+
+.backupButtons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-2);
+}

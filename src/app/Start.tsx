@@ -7,6 +7,7 @@ import {
 import { Page } from "../ui/Page.tsx";
 import { CrossIcon } from "../ui/icons.tsx";
 import { parseHash } from "./hash.ts";
+import { BackupControls } from "./BackupControls.tsx";
 import styles from "./Start.module.css";
 
 /** Accepts a quiz file URL or a full app link (…#src=…); returns the hash to open, or null. */
@@ -138,6 +139,7 @@ export function Start() {
           </ul>
         </section>
       )}
+      <BackupControls onRestored={() => setSources(loadSources())} />
     </Page>
   );
 }
