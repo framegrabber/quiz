@@ -12,10 +12,13 @@ function App() {
 
 const root = document.getElementById("app")!;
 
-// Dynamic on purpose: a static import would ship the preview's CSS in production builds.
+// Dynamic on purpose: static imports would ship the dev screens' CSS in production builds.
 if (import.meta.env.DEV && location.hash === "#preview") {
   const { TokenPreview } = await import("./dev/TokenPreview.tsx");
   render(<TokenPreview />, root);
+} else if (import.meta.env.DEV && /^#spike-[ab]$/.test(location.hash)) {
+  const { LayoutSpike } = await import("./dev/LayoutSpike.tsx");
+  render(<LayoutSpike mode={location.hash.endsWith("a") ? "a" : "b"} />, root);
 } else {
   render(<App />, root);
 }
