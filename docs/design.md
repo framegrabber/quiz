@@ -83,6 +83,7 @@ Rules that make it work:
 - Focus moves synchronously after the render triggered by the user's key or tap (layout effect), never later (timers lose the user gesture and iOS will not open the keyboard).
 - Action bar buttons call `preventDefault` on `mousedown`, so tapping them does not blur the field.
 - The field becomes read-only during feedback; it is not blurred or disabled.
+- While the keyboard is open (`html[data-keyboard-open]`), the round tightens its vertical rhythm (`--content-padding`, `--question-gap`, `--actions-padding` drop one step) so a 120-character prompt, its field, and the action bar fit above the keyboard on the iPhone SE (verified in T11). A focused field is also scrolled into view after the keyboard resizes the viewport.
 - Notes: the form accessory bar's ✓ ("Fertig") dismisses the keyboard by design; the QuickType suggestion bar still shows with `autocorrect="off"`, typed text is not altered. Confirm on a real iPhone in T17.
 
 ## Rejected patterns

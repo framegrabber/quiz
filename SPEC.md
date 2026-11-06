@@ -62,7 +62,7 @@ quiz/
     format/                  → quiz document schema, parse+validate, question id derivation, error formatting
     question-types/
       definitions.ts         → schema + check per type, no Preact; the format schema and the CLI use it
-      registry.ts            → definitions + UI components; used by the app
+      registry.tsx           → UI dispatch by type (components, check, labels); used by the app
       choice/                → schema.ts, check.ts, Choice.tsx (+ *.test.ts)
       input/                 → schema.ts, check.ts, Input.tsx
       cloze/                 → schema.ts, parse.ts, check.ts, Cloze.tsx
@@ -303,22 +303,22 @@ export interface QuestionDefinition<Q extends QuestionBase, A> {
 }
 export interface CheckResult { correct: boolean; solution: string; parts?: boolean[] }
 
-// UI part (src/question-types/registry.ts) — used by the app
+// UI contract (src/question-types/props.ts); src/question-types/registry.tsx dispatches by `type`
+// (QuestionView, checkAnswer, questionLabel) with an exhaustive switch.
 export interface QuestionProps<Q, A> {
   question: Q;
   phase: "answering" | "feedback";
   result?: CheckResult;                                     // set in "feedback"
   onChange(answer: A | null): void;                         // null = incomplete; enables "Antwort abgeben"
-  onSubmit(answer: A): void;                                // immediate submit (single choice tap, Return)
+  onSubmit(answer: A): void;                                // immediate submit (single-choice tap)
 }
-export interface QuestionType<Q extends QuestionBase, A> extends QuestionDefinition<Q, A> {
-  Component: FunctionComponent<QuestionProps<Q, A>>;
-}
+// Return in a text field bubbles to the Round, which submits (answer complete) or continues (feedback).
+// A component that needs Return itself (type-mode cloze: next gap) stops propagation.
 ```
 
 - The Round screen alone owns the action bar, scoring, progress recording, and focus moves between questions; question components never render the primary button.
 - Components stay under ~200 lines; split into subcomponents otherwise. Styles use tokens from `src/styles/tokens.css` only.
-- Named exports, no default exports. Files `camelCase.ts`, components `PascalCase.tsx`.
+- Named exports, no default exports. Files `camelCase.ts`, components `PascalCase.tsx`; component styles in a colocated `Component.module.css`.
 - Pure logic (format, engine, check) has no DOM or storage access; side effects live in `storage/` and components.
 - Validation happens once at the boundary (load, import); internal code trusts types.
 - UI strings in German, inline (no i18n layer).

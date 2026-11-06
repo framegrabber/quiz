@@ -9,7 +9,7 @@ Build the v1 quiz player from [`SPEC.md`](../SPEC.md): a Preact + TypeScript app
 - **Quality built per task, not at the end.** Every UI task implements its screen states (loading, empty, error, all-mastered, perfect round, storage unavailable), has a keyboard-only component test with axe, and is checked in light and dark mode. T16 is a final sweep only.
 - **URL is the overview state.** Category and round size live in the hash (`replaceState`), so sharing is `location.href`; a round is one history entry so swipe-back returns to the Overview.
 - **Round owns the shell, types own the content.** The Round screen owns action bar, scoring, and focus; question components implement `QuestionProps` (SPEC "Code Style") and never render the primary button.
-- **Split question-type definitions into a non-JSX part and a UI part.** `question-types/definitions.ts` lists schema + `check` per type (no Preact imports) and is what `format/` and the CLI use; `question-types/registry.ts` adds the components for the app. The Node CLI never loads JSX.
+- **Split question-type definitions into a non-JSX part and a UI part.** `question-types/definitions.ts` lists schema + `check` per type (no Preact imports) and is what `format/` and the CLI use; `question-types/registry.tsx` dispatches to the components for the app. The Node CLI never loads JSX.
 - **The generated JSON Schema covers structure only.** Cross-field rules (category references, unique ids, answer ∈ options, cloze gaps) live in Zod refinements and are enforced by the app and the CLI, not by editor autocompletion.
 - **Contract before UI.** The format (T5a, T5b) and the validator (T6) are finished before any question UI, so content authoring (T7) runs in parallel with the app work.
 - **Vertical slices for play.** Load → overview → round → result works first with `choice` only (T8, T9); `input` and `cloze` are added as one slice each (T10, T11), each verified in the iOS Simulator.
@@ -73,14 +73,14 @@ graph TD
 - [x] `docs/quiz-format.md` reviewed by you (it is the contract for AI authoring)
 
 ### Phase 3: Playable slices
-- [ ] T8: Loading, hash params, error screens
-- [ ] T9: Round with `choice` and result screen
-- [ ] T10: `input` question type
-- [ ] T11: `cloze` question type
+- [x] T8: Loading, hash params, error screens
+- [x] T9: Round with `choice` and result screen
+- [x] T10: `input` question type
+- [x] T11: `cloze` question type
 
 ### Checkpoint C: Playable
-- [ ] The possessives quiz is fully playable from a `#src=` link
-- [ ] Each type verified in the iOS Simulator on iPhone SE and iPad (keyboard open/closed, light and dark)
+- [x] The possessives quiz is fully playable from a `#src=` link
+- [x] Each type verified in the iOS Simulator on iPhone SE and iPad (keyboard open/closed, light and dark)
 - [ ] Review with you
 
 ### Phase 4: Progress and entry points
