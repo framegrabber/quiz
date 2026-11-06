@@ -12,7 +12,10 @@ export const choiceSchema = z
     prompt: textSchema,
     options: z.array(textSchema).min(2).max(8),
     answer: z.union([textSchema, z.array(textSchema).min(1)], {
-      error: "Muss ein Text oder eine Liste von Texten sein",
+      error: (issue) =>
+        issue.input === undefined
+          ? "Pflichtfeld fehlt"
+          : "Muss ein Text oder eine Liste von Texten sein",
     }),
   })
   .superRefine((q, ctx) => {

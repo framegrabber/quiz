@@ -6,7 +6,8 @@ z.config(de());
 // Clearer than "erwartet string, erhalten undefined" for authors.
 z.config({
   customError: (issue) =>
-    issue.code === "invalid_type" && issue.input === undefined
+    (issue.code === "invalid_type" || issue.code === "invalid_value") &&
+    issue.input === undefined
       ? "Pflichtfeld fehlt"
       : undefined,
 });
