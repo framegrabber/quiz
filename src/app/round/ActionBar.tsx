@@ -37,6 +37,7 @@ export function ActionBar(props: ActionBarProps) {
       </div>
       {result ? (
         <button
+          key="next"
           ref={props.nextRef}
           type="button"
           class="btn btn-primary btn-block"
@@ -51,6 +52,7 @@ export function ActionBar(props: ActionBarProps) {
         <button
           type="button"
           class="btn btn-primary btn-block"
+          key="submit"
           disabled={!props.canSubmit}
           onMouseDown={keepFocus}
           onClick={props.onSubmit}
