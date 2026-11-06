@@ -49,16 +49,16 @@ graph TD
 ## Task List
 
 ### Phase 1: Foundation and risk spikes
-- [ ] T1: Scaffold the app project
-- [ ] T2: Create repos and Pages deployment (needs your OK to create repos)
-- [ ] T3a: Design contract and tokens (light + dark)
-- [ ] T3: iPhone round layout shell (visual viewport + keyboard, focus mechanism)
-- [ ] T4: Answer normalization and cloze parser
+- [x] T1: Scaffold the app project
+- [x] T2: Create repos and Pages deployment
+- [x] T3a: Design contract and tokens (light + dark)
+- [ ] T3: iPhone round layout shell (visual viewport + keyboard, focus mechanism) — layout done; keyboard check pending
+- [x] T4: Answer normalization and cloze parser
 
 ### Checkpoint A: Foundation
-- [ ] `npm run typecheck && npm test && npm run build` pass
-- [ ] `https://framegrabber.github.io/quiz/` serves the app; a JSON file from `quiz-content` loads from the app origin
-- [ ] Layout shell verified in the iOS Simulator (iPhone SE 3rd gen and iPad, keyboard open); focus mechanism decided
+- [x] `npm run typecheck && npm test && npm run build` pass
+- [x] `https://framegrabber.github.io/quiz/` serves the app; a JSON file from `quiz-content` loads from the app origin
+- [ ] Layout shell verified in the iOS Simulator (iPhone SE 3rd gen and iPad, keyboard open); focus mechanism decided — keyboard-closed layout verified on SE, iPhone 17, iPad (light + dark); keyboard-open check pending
 - [ ] Design tokens reviewed by you in light and dark mode
 - [ ] Review with you
 
