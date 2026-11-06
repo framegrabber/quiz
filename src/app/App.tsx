@@ -1,47 +1,25 @@
 import { useEffect, useState } from "preact/hooks";
-import type { Quiz } from "../format/schema.ts";
-import { shuffle } from "../engine/shuffle.ts";
-import type { Question } from "../question-types/definitions.ts";
 import { parseHash } from "./hash.ts";
 import { loadQuiz, type LoadResult } from "./load.ts";
 import { ErrorScreen } from "./ErrorScreen.tsx";
 import { Overview } from "./Overview.tsx";
-import { Result } from "./Result.tsx";
-import { Round, type AnsweredQuestion } from "./round/Round.tsx";
+import { QuizScreen } from "./QuizScreen.tsx";
 import { Start } from "./Start.tsx";
 
-const DEFAULT_ROUND_SIZE = 10;
 const readHash = () => parseHash(location.hash, { dev: import.meta.env.DEV });
 
-/** A round lives in its own history entry, so back/swipe-back returns to the overview. */
-const ROUND_STATE = { quizRound: true };
-
-type Play =
-  | { phase: "round"; questions: Question[]; id: number }
-  | { phase: "result"; answered: AnsweredQuestion[] };
-
+/** Routes by the URL hash: start screen, loading, errors, or a loaded quiz. */
 export function App() {
   const [params, setParams] = useState(readHash);
   const [load, setLoad] = useState<{ src: string; result?: LoadResult } | null>(
     null,
   );
   const [attempt, setAttempt] = useState(0);
-  const [play, setPlay] = useState<Play | null>(null);
 
   useEffect(() => {
-    const onHashChange = () => {
-      setParams(readHash());
-      setPlay(null);
-    };
-    const onPopState = (event: PopStateEvent) => {
-      if (!event.state?.quizRound) setPlay(null);
-    };
+    const onHashChange = () => setParams(readHash());
     window.addEventListener("hashchange", onHashChange);
-    window.addEventListener("popstate", onPopState);
-    return () => {
-      window.removeEventListener("hashchange", onHashChange);
-      window.removeEventListener("popstate", onPopState);
-    };
+    return () => window.removeEventListener("hashchange", onHashChange);
   }, []);
 
   useEffect(() => {
@@ -74,48 +52,12 @@ export function App() {
       />
     );
   }
-
-  const quiz: Quiz = result.quiz;
-  const newRound = () => {
-    const size =
-      params.n === "all"
-        ? Infinity
-        : (params.n ?? quiz.roundSize ?? DEFAULT_ROUND_SIZE);
-    setPlay({
-      phase: "round",
-      questions: shuffle(quiz.questions).slice(0, size),
-      id: Date.now(),
-    });
-  };
-  const startRound = () => {
-    history.pushState(ROUND_STATE, "");
-    newRound();
-  };
-  // Leave via history so the round entry is popped; popstate then shows the overview.
-  const leaveRound = () => history.back();
-
-  if (play?.phase === "round") {
-    return (
-      <Round
-        key={play.id}
-        questions={play.questions}
-        language={quiz.language}
-        onFinish={(answered) => setPlay({ phase: "result", answered })}
-        onExit={leaveRound}
-      />
-    );
-  }
-  if (play?.phase === "result") {
-    return (
-      <Result
-        answered={play.answered}
-        language={quiz.language}
-        onAgain={newRound}
-        onOverview={leaveRound}
-      />
-    );
-  }
   return (
-    <Overview quiz={quiz} notices={params.problems} onStart={startRound} />
+    <QuizScreen
+      key={`${params.src}#${attempt}`}
+      src={params.src}
+      quiz={result.quiz}
+      params={params}
+    />
   );
 }

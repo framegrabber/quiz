@@ -1,4 +1,5 @@
 import type { ComponentChildren } from "preact";
+import { StorageBanner } from "./StorageBanner.tsx";
 import styles from "./Page.module.css";
 
 interface PageProps {
@@ -16,6 +17,7 @@ export function Page({ actions, busy, children }: PageProps) {
         class={`${styles.column} ${styles.main}`}
         aria-busy={busy || undefined}
       >
+        <StorageBanner />
         {children}
       </main>
       {actions && (

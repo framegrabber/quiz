@@ -34,3 +34,10 @@
   display: grid;
   gap: var(--space-2);
 }
+
+.banner {
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--color-incorrect);
+  border-radius: var(--radius-m);
+  background: var(--color-incorrect-subtle);
+}

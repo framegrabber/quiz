@@ -7,6 +7,8 @@ import styles from "./Result.module.css";
 interface ResultProps {
   answered: AnsweredQuestion[];
   language?: string;
+  /** Mastered questions in the round's selection, before and after the round. */
+  mastery?: { before: number; after: number; total: number };
   onAgain: () => void;
   onOverview: () => void;
 }
@@ -14,6 +16,7 @@ interface ResultProps {
 export function Result({
   answered,
   language,
+  mastery,
   onAgain,
   onOverview,
 }: ResultProps) {
@@ -51,6 +54,18 @@ export function Result({
         <p class={styles.score}>
           {correct} / {answered.length} richtig
         </p>
+        {mastery && (
+          <p>
+            Gemeistert: {mastery.after} / {mastery.total}
+            {mastery.after !== mastery.before && (
+              <span class="text-muted">
+                {" "}
+                ({mastery.after > mastery.before ? "+" : "−"}
+                {Math.abs(mastery.after - mastery.before)})
+              </span>
+            )}
+          </p>
+        )}
       </header>
       {mistakes.length === 0 ? (
         <p class={styles.perfect}>Alles richtig – stark!</p>

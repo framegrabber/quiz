@@ -1,4 +1,6 @@
-export type RoundSize = number | "all";
+import type { RoundSize } from "../engine/selectRound.ts";
+
+export type { RoundSize };
 
 export interface HashParams {
   src?: string;

@@ -20,6 +20,12 @@ function openLink(src = SRC) {
   return render(<App />);
 }
 
+/** The enabled start button of the loaded overview (the loading placeholder has a disabled one). */
+async function loadedStart() {
+  await screen.findByRole("heading", { level: 1, name: valid.title });
+  return screen.getByRole("button", { name: "Starten" });
+}
+
 afterEach(() => vi.unstubAllGlobals());
 
 test("loading shows a busy placeholder with a disabled start, then the overview", async () => {
@@ -93,11 +99,11 @@ test("a non-https link is rejected without fetching", async () => {
 test("back during a round returns to the overview", async () => {
   serve(JSON.stringify(valid))();
   openLink();
-  fireEvent.click(await screen.findByRole("button", { name: "Starten" }));
+  fireEvent.click(await loadedStart());
   expect(screen.getByRole("progressbar")).toBeTruthy();
 
   history.back();
-  expect(await screen.findByRole("button", { name: "Starten" })).toBeTruthy();
+  expect(await loadedStart()).toBeTruthy();
   expect(location.hash).toContain("src=");
 });
 
@@ -107,7 +113,7 @@ test("a perfect round shows its own message", async () => {
   doc.categories = [doc.categories[1]];
   serve(JSON.stringify(doc))();
   openLink();
-  fireEvent.click(await screen.findByRole("button", { name: "Starten" }));
+  fireEvent.click(await loadedStart());
   fireEvent.click(screen.getByRole("button", { name: "its" }));
   fireEvent.click(screen.getByRole("button", { name: "Ergebnis anzeigen" }));
   expect(screen.getByText("1 / 1 richtig")).toBeTruthy();

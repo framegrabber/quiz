@@ -34,6 +34,12 @@
   background: var(--color-accent-subtle);
 }
 
+.allMastered {
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-m);
+  background: var(--color-correct-subtle);
+}
+
 .placeholder {
   min-height: 1.75rem;
   border-radius: var(--radius-s);

@@ -81,7 +81,7 @@ graph TD
 ### Checkpoint C: Playable
 - [x] The possessives quiz is fully playable from a `#src=` link
 - [x] Each type verified in the iOS Simulator on iPhone SE and iPad (keyboard open/closed, light and dark)
-- [ ] Review with you
+- [x] Review with you
 
 ### Phase 4: Progress and entry points
 - [ ] T12: Storage, mastery, and round selection
