@@ -71,7 +71,7 @@ export function Start() {
 
   return (
     <Page>
-      <h1>Quiz</h1>
+      <h1>Lernquiz</h1>
       {sources.length === 0 && (
         <p>
           Hier übst du mit Quiz-Links, die du von deiner Lehrkraft oder aus
