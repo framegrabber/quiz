@@ -1,10 +1,10 @@
 import { fireEvent, render, screen } from "@testing-library/preact";
 import { expect, test, vi } from "vitest";
-import type { PlayableQuestion } from "../../question-types/registry.tsx";
+import type { Question } from "../../question-types/definitions.ts";
 import { expectNoAxeViolations } from "../../test/axe.ts";
 import { Round } from "./Round.tsx";
 
-const single: PlayableQuestion = {
+const single: Question = {
   id: "q1",
   type: "choice",
   category: "c",
@@ -13,7 +13,7 @@ const single: PlayableQuestion = {
   answer: "its",
   explanation: "its = Besitz",
 };
-const multi: PlayableQuestion = {
+const multi: Question = {
   id: "q2",
   type: "choice",
   category: "c",

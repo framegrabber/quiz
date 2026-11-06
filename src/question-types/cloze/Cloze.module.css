@@ -1,0 +1,82 @@
+.cloze,
+.bankLayout {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.instruction {
+  color: var(--color-text-muted);
+}
+
+.text {
+  font-size: var(--font-size-l);
+  line-height: 2.4;
+}
+
+.gap {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  min-width: 4.5em;
+  min-height: var(--tap-target);
+  padding: 0 var(--space-2);
+  border: 1px dashed var(--color-border-strong);
+  border-radius: var(--radius-s);
+  background: var(--color-surface);
+  font-size: var(--font-size-m);
+  font-weight: var(--font-weight-strong);
+  vertical-align: middle;
+  line-height: var(--line-height-tight);
+}
+
+.gap[aria-pressed="true"] {
+  border: 2px solid var(--color-accent);
+  background: var(--color-accent-subtle);
+}
+
+.gap[data-state="correct"] {
+  border: 1px solid var(--color-correct);
+  background: var(--color-correct-subtle);
+  color: var(--color-text);
+}
+
+.gap[data-state="incorrect"] {
+  border: 1px solid var(--color-incorrect);
+  background: var(--color-incorrect-subtle);
+  color: var(--color-text);
+}
+
+.bank {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.tile {
+  min-width: var(--tap-target);
+  min-height: var(--tap-target);
+  padding: 0 var(--space-3);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-m);
+  background: var(--color-surface);
+}
+
+.tile[data-used] {
+  border-style: dashed;
+  border-color: var(--color-border);
+  background: transparent;
+  color: transparent;
+}
+
+.typedGap {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  vertical-align: middle;
+}
+
+.gapInput {
+  width: auto;
+  min-height: var(--tap-target);
+  padding: var(--space-1) var(--space-2);
+}

@@ -1,10 +1,7 @@
 import { useEffect, useState } from "preact/hooks";
 import type { Quiz } from "../format/schema.ts";
 import { shuffle } from "../engine/shuffle.ts";
-import {
-  isPlayable,
-  type PlayableQuestion,
-} from "../question-types/registry.tsx";
+import type { Question } from "../question-types/definitions.ts";
 import { parseHash } from "./hash.ts";
 import { loadQuiz, type LoadResult } from "./load.ts";
 import { ErrorScreen } from "./ErrorScreen.tsx";
@@ -20,7 +17,7 @@ const readHash = () => parseHash(location.hash, { dev: import.meta.env.DEV });
 const ROUND_STATE = { quizRound: true };
 
 type Play =
-  | { phase: "round"; questions: PlayableQuestion[]; id: number }
+  | { phase: "round"; questions: Question[]; id: number }
   | { phase: "result"; answered: AnsweredQuestion[] };
 
 export function App() {
@@ -84,10 +81,9 @@ export function App() {
       params.n === "all"
         ? Infinity
         : (params.n ?? quiz.roundSize ?? DEFAULT_ROUND_SIZE);
-    const pool = quiz.questions.filter(isPlayable);
     setPlay({
       phase: "round",
-      questions: shuffle(pool).slice(0, size),
+      questions: shuffle(quiz.questions).slice(0, size),
       id: Date.now(),
     });
   };

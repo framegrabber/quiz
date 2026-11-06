@@ -1,21 +1,17 @@
 import { fireEvent, render, screen } from "@testing-library/preact";
 import { expect, test, vi } from "vitest";
 import { Round } from "../../app/round/Round.tsx";
-import type { PlayableQuestion } from "../registry.tsx";
+import type { Question } from "../definitions.ts";
 import { expectNoAxeViolations } from "../../test/axe.ts";
 
-const typed = (
-  id: string,
-  prompt: string,
-  answer: string,
-): PlayableQuestion => ({
+const typed = (id: string, prompt: string, answer: string): Question => ({
   id,
   type: "input",
   category: "c",
   prompt,
   answer,
 });
-const choice: PlayableQuestion = {
+const choice: Question = {
   id: "c1",
   type: "choice",
   category: "c",

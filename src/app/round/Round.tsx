@@ -4,8 +4,8 @@ import {
   checkAnswer,
   submitsOnTap,
   type Answer,
-  type PlayableQuestion,
 } from "../../question-types/registry.tsx";
+import type { Question } from "../../question-types/definitions.ts";
 import type { CheckResult } from "../../question-types/types.ts";
 import { RoundLayout } from "../../ui/RoundLayout.tsx";
 import { CrossIcon } from "../../ui/icons.tsx";
@@ -13,12 +13,12 @@ import { ActionBar } from "./ActionBar.tsx";
 import styles from "./Round.module.css";
 
 export interface AnsweredQuestion {
-  question: PlayableQuestion;
+  question: Question;
   result: CheckResult;
 }
 
 interface RoundProps {
-  questions: PlayableQuestion[];
+  questions: Question[];
   /** Language of the quiz content (`lang` on the question area). */
   language?: string;
   onAnswer?: (answered: AnsweredQuestion) => void;
