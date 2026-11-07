@@ -371,6 +371,8 @@ Spec: [`SPEC.md`](../SPEC.md) · Plan: [`plan.md`](plan.md). Standard gate for e
 **Files likely touched:** `src/app/Catalog.tsx`, `src/app/load.ts`, `src/app/hash.ts`, `src/app/Start.tsx`, `src/storage/catalog.ts`, `src/storage/backup.ts`
 **Estimated scope:** M
 
+---
+
 ## Phase 4d: Table question type (added on request)
 
 ## T20: `table` question type
@@ -388,8 +390,6 @@ Spec: [`SPEC.md`](../SPEC.md) · Plan: [`plan.md`](plan.md). Standard gate for e
 **Dependencies:** T11
 **Files likely touched:** `src/question-types/table/*`, `src/question-types/definitions.ts`, `src/question-types/registry.tsx`, `src/format/fitWarnings.ts`, `src/app/round/ActionBar.tsx`
 **Estimated scope:** M
-
----
 
 ---
 
