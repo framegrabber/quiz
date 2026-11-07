@@ -97,8 +97,8 @@ graph TD
 - [x] T15b: Activity log, per-quiz and overall statistics, "Fehler üben"
 
 ### Phase 4c: Catalog (added on request)
-- [ ] T18: Catalog format, generator, and content CI
-- [ ] T19: Catalog on the start screen
+- [x] T18: Catalog format, generator, and content CI
+- [x] T19: Catalog on the start screen
 
 ### Phase 4d: Table question type (added on request)
 - [ ] T20: `table` question type (spec addition first, then schema, check, UI, Simulator keyboard check)
