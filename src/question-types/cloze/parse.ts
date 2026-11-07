@@ -12,9 +12,13 @@ export type ClozeParseResult =
 
 /**
  * Parses cloze text: gaps are `{answer}` or `{answer|alt|alt}`; `\{` and `\}` are literal braces.
- * Reports every error it finds instead of stopping at the first.
+ * Reports every error it finds instead of stopping at the first. Table cells pass
+ * `requireGap: false` because plain text cells are allowed.
  */
-export function parseCloze(source: string): ClozeParseResult {
+export function parseCloze(
+  source: string,
+  { requireGap = true }: { requireGap?: boolean } = {},
+): ClozeParseResult {
   const parts: ClozePart[] = [];
   const errors: ClozeError[] = [];
   let text = "";
@@ -71,7 +75,11 @@ export function parseCloze(source: string): ClozeParseResult {
   if (gap)
     errors.push({ index: gap.start, message: "Lücke ohne schließende }" });
   if (text) parts.push({ kind: "text", text });
-  if (!parts.some((p) => p.kind === "gap") && errors.length === 0) {
+  if (
+    requireGap &&
+    !parts.some((p) => p.kind === "gap") &&
+    errors.length === 0
+  ) {
     errors.push({ index: 0, message: "Der Text enthält keine Lücke" });
   }
 

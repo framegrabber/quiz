@@ -101,14 +101,14 @@ graph TD
 - [x] T19: Catalog on the start screen
 
 ### Phase 4d: Table question type (added on request)
-- [ ] T20: `table` question type (spec addition first, then schema, check, UI, Simulator keyboard check)
+- [x] T20: `table` question type (spec addition first, then schema, check, UI, Simulator keyboard check)
 
 ### Phase 5: Release
 - [x] T16: Home-screen icon ("Lernkarten-Stapel", name "Lernquiz") and manifest, final accessibility and responsive sweep, bundle budget (VoiceOver pass moves to T17, it needs a person listening)
 - [ ] T17: Release verification on simulator, real iPhone, and Pages
 
 ### Checkpoint E: Complete
-- [ ] All 22 spec success criteria met
+- [ ] All 23 spec success criteria met
 - [ ] Ready to share with the class
 
 ## Parallelization

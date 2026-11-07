@@ -9,6 +9,8 @@ export const FIT_LIMITS = {
   clozeChars: 160,
   clozeGaps: 4,
   bankWords: 8,
+  tableColumns: 3,
+  tableRows: 6,
 } as const;
 
 /** Warnings for content that is valid but will need scrolling on small phones. */
@@ -54,6 +56,20 @@ export function fitWarnings(quiz: Quiz): FormatError[] {
         warn(
           `${at}`,
           `${bank} Wörter in der Wortbank (empfohlen ≤ ${FIT_LIMITS.bankWords})`,
+        );
+      }
+    }
+    if (q.type === "table") {
+      if (q.columns.length > FIT_LIMITS.tableColumns) {
+        warn(
+          `${at}.columns`,
+          `${q.columns.length} Spalten (empfohlen ≤ ${FIT_LIMITS.tableColumns})`,
+        );
+      }
+      if (q.rows.length > FIT_LIMITS.tableRows) {
+        warn(
+          `${at}.rows`,
+          `${q.rows.length} Zeilen (empfohlen ≤ ${FIT_LIMITS.tableRows})`,
         );
       }
     }

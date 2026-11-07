@@ -1,0 +1,80 @@
+.table {
+  display: grid;
+  gap: var(--question-gap, var(--space-4));
+}
+
+.instruction {
+  color: var(--color-text-muted);
+}
+
+.grid {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.grid th,
+.grid td {
+  padding: 2px var(--space-2);
+  border-bottom: 1px solid var(--color-border);
+  text-align: start;
+  vertical-align: middle;
+  overflow-wrap: anywhere;
+}
+
+.grid thead th {
+  font-size: var(--font-size-s);
+  color: var(--color-text-muted);
+  border-bottom-color: var(--color-border-strong);
+}
+
+.grid tbody th {
+  font-weight: var(--font-weight-strong);
+}
+
+/* Text and fields of one cell stay on one line; fields take the remaining width. */
+.cellLine {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.cellText {
+  flex: none;
+  white-space: nowrap;
+}
+
+.gapBox {
+  position: relative;
+  display: flex;
+  flex: 1 1 0;
+  min-width: 2.5em;
+}
+
+.gapInput {
+  flex: 1 1 auto;
+  width: 100%;
+  min-width: 0;
+  min-height: var(--tap-target);
+  padding: var(--space-1) var(--space-2);
+}
+
+/* Room for the check/cross mark inside the field, so feedback never changes the layout. */
+.gapInput[data-state] {
+  padding-inline-end: 1.5rem;
+}
+
+.mark {
+  position: absolute;
+  inset-inline-end: var(--space-1);
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  pointer-events: none;
+}
+
+.correction {
+  display: block;
+  margin-top: 2px;
+  font-weight: var(--font-weight-strong);
+}

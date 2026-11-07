@@ -26,6 +26,12 @@ test("content at the limits produces no warnings", () => {
         text: `{a} {b} {c} {d}${"x".repeat(153)}`,
         distractors: ["e", "f", "g", "h"],
       },
+      {
+        type: "table",
+        category: "c",
+        columns: ["a", "b", "c"],
+        rows: Array.from({ length: 6 }, () => ["x", "{y}", "z"]),
+      },
     ]),
   );
   expect(warnings).toEqual([]);
@@ -50,6 +56,12 @@ test("each limit just exceeded produces a warning at its path", () => {
         text: "{a}",
         distractors: ["1", "2", "3", "4", "5", "6", "7", "8"],
       },
+      {
+        type: "table",
+        category: "c",
+        columns: ["a", "b", "c", "d"],
+        rows: Array.from({ length: 7 }, () => ["x", "{y}", "z", "w"]),
+      },
     ]),
   );
   expect(warnings.map((w) => w.path)).toEqual([
@@ -58,6 +70,8 @@ test("each limit just exceeded produces a warning at its path", () => {
     "questions[2].text",
     "questions[3].text",
     "questions[4]",
+    "questions[5].columns",
+    "questions[5].rows",
   ]);
 });
 

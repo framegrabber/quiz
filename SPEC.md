@@ -68,6 +68,7 @@ quiz/
       choice/                → schema.ts, check.ts, Choice.tsx (+ *.test.ts)
       input/                 → schema.ts, check.ts, Input.tsx
       cloze/                 → schema.ts, parse.ts, check.ts, Cloze.tsx
+      table/                 → schema.ts, check.ts, Table.tsx (cells reuse the cloze parser)
     engine/                  → answer normalization, round selection, mastery transitions (pure)
     storage/                 → localStorage access, export/import
     ui/                      → shared presentational components
@@ -141,7 +142,17 @@ interface ClozeQuestion extends QuestionBase {
   distractors?: string[];        // extra wrong words for the bank
   caseSensitive?: boolean;       // default false
 }
+
+interface TableQuestion extends QuestionBase {
+  type: "table";
+  prompt?: string;               // instruction, e.g. "Ergänze die Kurzformen."
+  columns: string[];             // 2–4 column headers
+  rows: string[][];              // 1–12 rows, each with one cell per column; cells use the cloze gap syntax
+  caseSensitive?: boolean;       // default false
+}
 ```
+
+Table cells are plain text (may be empty) or contain gaps in cloze syntax: `"{I'm}"`, `"{isn't|is not}"`, `"I{'m} not"`. Gaps are typed (no word bank) and numbered row by row. The table needs ≥ 1 gap.
 
 Example:
 ```json
@@ -171,11 +182,11 @@ Example:
 
 ### Validation rules
 - Unknown fields are errors (catches AI/author typos like `anwser`). `$schema` is the only extra top-level field.
-- Cross-field rules: `category` references an existing id; every category has ≥ 1 question; ids unique (questions and categories separately); `answer` values ∈ `options`; `options` unique; cloze `text` has ≥ 1 gap and no empty alternatives.
+- Cross-field rules: `category` references an existing id; every category has ≥ 1 question; ids unique (questions and categories separately); `answer` values ∈ `options`; `options` unique; cloze `text` has ≥ 1 gap and no empty alternatives; table rows have exactly one cell per column, cells parse like cloze text, and the table has ≥ 1 gap.
 - Unknown `type` → error. Adding a type within `schema: 1` is additive; the deployed app is always the latest, so no skip-unknown logic.
 - Any document with `schema` ≠ 1 → error "Quiz-Format Version X wird nicht unterstützt." (Reserves room for a future library manifest as a distinct document type.)
 - Error output: list of `path: message`, e.g. `questions[3].answer: "its" ist nicht in options enthalten`. CLI prints all errors; app shows the first 10 plus a count.
-- Mobile-fit warnings (CLI only, exit code stays 0; limits from "Mobile layout"): `prompt` > 120 characters; `choice` with > 4 options; cloze `text` > 160 characters, > 4 gaps, or bank > 8 words.
+- Mobile-fit warnings (CLI only, exit code stays 0; limits from "Mobile layout"): `prompt` > 120 characters; `choice` with > 4 options; cloze `text` > 160 characters, > 4 gaps, or bank > 8 words; table > 3 columns or > 6 rows.
 
 ### Question identity
 `id` if present, else `h:` + FNV-1a hash (hex) of the question's canonical JSON (sorted keys, `id` excluded). Editing an id-less question resets its progress; that is accepted.
@@ -234,6 +245,7 @@ interface CatalogEntry {
 - **input:** text field with `autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false"`; Enter or button submits; empty submit disabled.
 - **cloze, bank:** bank = first alternative of every gap (duplicates kept) + `distractors`, shuffled. Tap a word → fills the selected gap, else the first empty gap. Tap a filled gap → word returns to the bank. Submit enabled when all gaps are filled. No drag and drop.
 - **cloze, type:** one inline input per gap with the same attributes as `input`.
+- **table:** a real `<table>` with the column headers; one input per gap inside its cell, same attributes as `input`. Feedback marks each gap with an icon inside the field (plus hidden text), and a wrong cell shows its corrected content below the field; the action bar therefore shows no "Lösung" line (`CheckResult.inlineSolution`). The result screen lists the gap answers in order, separated by " · ", labeled with the table's `prompt` (or the column headers).
 - Correct iff all gaps are correct; feedback marks each gap.
 - Option and bank order are shuffled on every presentation.
 
@@ -293,6 +305,7 @@ Nothing else: no fuzzy matching, no stripping punctuation. `it's` ≠ `its`.
 ### Accessibility (WCAG 2.1 AA)
 - Every flow works keyboard-only and with a screen reader: native `<button>`/`<input>` for all controls, a visible focus. After answering, feedback is announced via an `aria-live="polite"` region that exists before it changes; focus stays in the input for typed answers (see Mobile layout) and moves to "Weiter" otherwise. On "Weiter", focus moves to the next question's answer control.
 - Multi choice options expose their selected state (`aria-pressed` or checkbox semantics). Cloze gaps are buttons labeled with their state ("Lücke 2 von 4: leer" / "Lücke 2 von 4: their"); the selected gap is `aria-pressed`.
+- Table: column headers are `<th scope="col">`; a first-column cell without gaps is `<th scope="row">`. Each table input is labeled "<column header>, <row header>" (or "Zeile n" without a row header).
 - One `h1` per screen, no skipped heading levels; every input has a visible or `aria-label` label.
 - Correct/incorrect is never shown by color alone (icon + text). Text contrast ≥ 4.5:1, large text and UI boundaries ≥ 3:1, in light and dark mode.
 - Animations only for state changes, ≤ 200 ms, disabled under `prefers-reduced-motion`.
@@ -310,10 +323,10 @@ Nothing else: no fuzzy matching, no stripping punctuation. `it's` ≠ `its`.
 Reference devices, portrait, Safari with its toolbar visible: **iPhone SE 3rd gen (375 × 667 pt)** as the smallest supported screen, and iPhone 17 (402 × 874 pt). Landscape works but may scroll.
 
 - **Round screen = fixed three-part layout** filling the visible viewport: header ≤ 44 px (back, k/N, progress bar) · content area (question + answer UI) · action bar at the bottom (feedback + the primary button "Antwort abgeben"/"Weiter"). The page never scrolls during a round; only the content area may, and only for content beyond the fit limits.
-- **Fit limits without scrolling, iPhone SE, keyboard closed:** choice with prompt ≤ 120 characters and ≤ 4 options; bank cloze with text ≤ 160 characters, ≤ 4 gaps, bank ≤ 8 words. **Keyboard open:** an input question with prompt ≤ 120 characters shows prompt, input, and action bar together above the keyboard. Longer content is allowed (validator warns) and scrolls inside the content area.
+- **Fit limits without scrolling, iPhone SE, keyboard closed:** choice with prompt ≤ 120 characters and ≤ 4 options; bank cloze with text ≤ 160 characters, ≤ 4 gaps, bank ≤ 8 words; table with ≤ 3 columns and ≤ 6 rows (measured in T20: rows are 49 px with 44 px fields; 7 rows overflow). **Keyboard open:** an input question with prompt ≤ 120 characters shows prompt, input, and action bar together above the keyboard; a table scrolls inside the content area so the focused cell stays visible above the action bar. Longer content is allowed (validator warns) and scrolls inside the content area.
 - **Keyboard overlay:** iOS Safari does not shrink the layout viewport for the on-screen keyboard and ignores `interactive-widget`. The round layout height therefore follows `window.visualViewport.height` (CSS variable `--app-height`, updated on `visualViewport` `resize` and `scroll`), which puts the action bar directly above the keyboard. Fallback without `visualViewport`: `100dvh`.
 - **Typed answers keep the keyboard open:** Return submits (`enterkeyhint="done"`); feedback appears in the action bar; Return again continues. Consecutive typed questions (`input` and type-mode `cloze`, in any order) keep the keyboard open: each question renders its own field and the Round focuses the next question's first field in a layout effect right after the render caused by Return or the "Weiter" tap (decided and verified in T3, see `docs/design.md`). The field is read-only during feedback, never blurred. Action bar buttons call `preventDefault` on `mousedown` so tapping "Weiter" does not blur the input. When the next question needs no typing, the input blurs and the keyboard closes.
-- **Type-mode cloze:** Return moves to the next gap (`enterkeyhint="next"`), on the last gap submits (`enterkeyhint="done"`); the focused gap is scrolled into view above the keyboard (`scrollIntoView({ block: "nearest" })` after the viewport resize).
+- **Type-mode cloze and table:** Return moves to the next gap (`enterkeyhint="next"`), on the last gap submits (`enterkeyhint="done"`); the focused gap is scrolled into view above the keyboard (`scrollIntoView({ block: "nearest" })` after the viewport resize). Table gaps go row by row. A table counts as a typed question for keeping the keyboard open.
 - **Feedback** (icon, Richtig/Falsch, solution) lives in the action bar; a long explanation expands inside the content area. "Weiter" never leaves the screen.
 - Inputs use `font-size` ≥ 16 px (prevents iOS auto-zoom on focus). No `maximum-scale`/`user-scalable=no`; pinch zoom stays available.
 - `viewport-fit=cover` plus `env(safe-area-inset-*)` padding: nothing sits under the notch/Dynamic Island or the home indicator.
@@ -414,6 +427,7 @@ export interface QuestionProps<Q, A> {
 20. Added to the iPhone home screen, the app shows the "Lernquiz" name and the card-stack icon, and starts standalone.
 21. Start lists every published quiz from the default catalog, grouped by subject and book, with progress for played quizzes; a `#catalog=` link switches the catalog and it is remembered; a catalog that fails to load shows an error with retry while the rest of Start works.
 22. Adding a valid quiz file to `quiz-content` and pushing makes it appear in the catalog without editing any other file; an invalid quiz fails CI and nothing is published.
+23. A `table` question (3 columns × 6 rows) fits an iPhone SE without scrolling with the keyboard closed; Return walks through all gaps row by row with the keyboard open and submits on the last; feedback marks every gap and shows the correct answer in wrong cells.
 
 ## Out of Scope for v1
 

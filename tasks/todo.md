@@ -371,6 +371,26 @@ Spec: [`SPEC.md`](../SPEC.md) · Plan: [`plan.md`](plan.md). Standard gate for e
 **Files likely touched:** `src/app/Catalog.tsx`, `src/app/load.ts`, `src/app/hash.ts`, `src/app/Start.tsx`, `src/storage/catalog.ts`, `src/storage/backup.ts`
 **Estimated scope:** M
 
+## Phase 4d: Table question type (added on request)
+
+## T20: `table` question type
+**Description:** SPEC "Question types" (`TableQuestion`), "Answering per type", "Mobile layout": typed fill-in table with cloze gap syntax per cell.
+
+**Acceptance criteria:**
+- [x] Schema (2–4 columns, 1–12 rows, one cell per column, cells parse like cloze, ≥ 1 gap) and check (row-by-row gaps, `inlineSolution`)
+- [x] `<table>` with column/row headers, labeled fields, Return walks the gaps, marks inside fields, corrected cell below wrong fields
+- [x] Fit warning > 3 columns or > 6 rows; `docs/quiz-format.md` updated; tables added to the five quizzes
+
+**Verification:**
+- [x] Unit tests (check, schema errors with `rows[r][c]` paths, fit warnings); component flow test with axe
+- [x] Simulator SE: 3 × 6 table fits with the keyboard closed (7 rows overflow); keyboard stays open from an input question into the table and through all gaps; feedback light and dark
+
+**Dependencies:** T11
+**Files likely touched:** `src/question-types/table/*`, `src/question-types/definitions.ts`, `src/question-types/registry.tsx`, `src/format/fitWarnings.ts`, `src/app/round/ActionBar.tsx`
+**Estimated scope:** M
+
+---
+
 ---
 
 ## Phase 5: Release

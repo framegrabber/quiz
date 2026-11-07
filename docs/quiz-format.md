@@ -43,7 +43,7 @@ A quiz is one JSON file. The app loads it from a link: `https://framegrabber.git
 
 | Field | Required | Meaning |
 |---|---|---|
-| `type` | yes | `"choice"`, `"input"`, or `"cloze"` |
+| `type` | yes | `"choice"`, `"input"`, `"cloze"`, or `"table"` |
 | `category` | yes | The `id` of one entry in `categories` |
 | `id` | no, **strongly recommended** | Unique within the file; `A–Z a–z 0–9 _ -`, max 64 characters. Progress is stored per id. Without an id, the app derives one from the content, so editing the question resets its progress |
 | `explanation` | no | Shown after answering, right or wrong. Use it for the rule behind the answer |
@@ -102,6 +102,31 @@ A quiz is one JSON file. The app loads it from a link: `https://framegrabber.git
 - `prompt` (optional instruction), `caseSensitive` (optional, default `false`).
 - The question is correct only if every gap is correct; feedback marks each gap.
 
+### `table`: fill in a table
+
+```json
+{
+  "id": "be-040",
+  "type": "table",
+  "category": "short",
+  "prompt": "Ergänze die Kurzformen.",
+  "columns": ["Langform", "Kurzform"],
+  "rows": [
+    ["I am", "{I'm}"],
+    ["he is", "{he's}"],
+    ["they are", "{they're}"]
+  ],
+  "explanation": "Bei der Kurzform ersetzt der Apostroph den ausgelassenen Buchstaben."
+}
+```
+
+- `columns`: 2–4 header texts. `rows`: 1–12 rows, each with exactly one cell per column.
+- A cell is plain text (may be `""`) or contains gaps in cloze syntax: `"{I'm}"`, `"{isn't|is not}"`, or text around a gap like `"I{'m} not"`. The table needs at least one gap.
+- Gaps are always typed (no word bank) and filled row by row; Return jumps to the next gap.
+- A first-column cell without a gap is read out as the row header, so put the "given" form in the first column where possible.
+- `prompt` (optional instruction), `caseSensitive` (optional, default `false`).
+- Correct only if every gap is correct; feedback marks each gap and shows the right answer in wrong cells.
+
 ## How typed answers are checked
 
 Both sides are normalized, then compared exactly:
@@ -133,6 +158,7 @@ Errors (the file is rejected):
 - Duplicate question ids; identical questions without ids.
 - `choice`: fewer than 2 or more than 8 options, duplicate options, an answer not in `options`.
 - `cloze`: no gap, unclosed `{`, stray `}`, nested gaps, empty gaps or alternatives (reported with the character position).
+- `table`: fewer than 2 or more than 4 columns, no rows or more than 12, a row with the wrong number of cells, a cell that breaks the gap syntax (reported as `rows[r][c]` with the character position), no gap at all.
 
 Cross-references (categories, duplicate ids) are checked once every question is structurally valid. Fix the reported errors and run the validator again.
 
@@ -145,12 +171,14 @@ Warnings (valid, but the question will need scrolling on small phones such as th
 | `cloze` text length (as shown) | ≤ 160 characters |
 | `cloze` gaps | ≤ 4 |
 | `cloze` word bank (gaps + distractors, bank mode) | ≤ 8 words |
+| `table` columns | ≤ 3 |
+| `table` rows | ≤ 6 (split long paradigms, e.g. singular and plural) |
 
 ## Writing good questions
 
 - One learning point per question; put the rule in `explanation`.
 - Give every question an `id` with a quiz prefix (`pd-001`, `pd-002`, …). Never reuse an id for a different question.
-- Mix types: `choice` to recognize, `input`/`cloze` (type mode) to produce.
+- Mix types: `choice` to recognize, `input`/`cloze` (type mode) to produce, `table` to practise whole paradigms (long form → short form, pronoun → possessive).
 - Distractors should be the typical mistakes (`it's` for `its`, `his` for `her`), not random words.
 - Write your own sentences. Do not copy exercises or texts from textbooks (the repo is public).
 
@@ -167,12 +195,12 @@ Topic: <e.g. possessive determiners: my, your, his, her, its, our, their>
 Audience: <e.g. Gymnasium Bayern, Jahrgangsstufe 5, Green Line 1>
 Language of the questions: <en>, explanations in German.
 Categories: <list ids and names>
-Size: <e.g. 40 questions>, mix of choice, input, and cloze (some cloze in "type" mode).
+Size: <e.g. 40 questions>, mix of choice, input, cloze (some in "type" mode), and a few table questions.
 Rules:
 - Every question has an id "<prefix>-001", "<prefix>-002", …
 - Own sentences only, no textbook texts.
 - Distractors are typical mistakes for this age group.
-- Stay within the recommended limits (prompt ≤ 120 characters, ≤ 4 options, cloze ≤ 160 characters, ≤ 4 gaps, ≤ 8 bank words).
+- Stay within the recommended limits (prompt ≤ 120 characters, ≤ 4 options, cloze ≤ 160 characters, ≤ 4 gaps, ≤ 8 bank words, table ≤ 3 columns and ≤ 6 rows).
 - Add an explanation in German wherever a typical confusion is involved.
 Output only the JSON.
 ```

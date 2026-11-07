@@ -7,6 +7,8 @@ import { inputSchema, type InputQuestion } from "./input/schema.ts";
 import { checkInput } from "./input/check.ts";
 import { clozeSchema, type ClozeQuestion } from "./cloze/schema.ts";
 import { checkCloze } from "./cloze/check.ts";
+import { tableSchema, type TableQuestion } from "./table/schema.ts";
+import { checkTable } from "./table/check.ts";
 
 export const choice: QuestionDefinition<ChoiceQuestion, readonly string[]> = {
   type: "choice",
@@ -26,7 +28,18 @@ export const cloze: QuestionDefinition<ClozeQuestion, readonly string[]> = {
   check: checkCloze,
 };
 
-const questionSchemas = [choiceSchema, inputSchema, clozeSchema] as const;
+export const table: QuestionDefinition<TableQuestion, readonly string[]> = {
+  type: "table",
+  schema: tableSchema,
+  check: checkTable,
+};
+
+const questionSchemas = [
+  choiceSchema,
+  inputSchema,
+  clozeSchema,
+  tableSchema,
+] as const;
 
 export const questionSchema = z.discriminatedUnion("type", questionSchemas, {
   error: (issue) =>

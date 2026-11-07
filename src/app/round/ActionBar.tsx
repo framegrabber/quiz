@@ -27,7 +27,7 @@ export function ActionBar(props: ActionBarProps) {
           >
             {result.correct ? <CheckIcon /> : <CrossIcon />}
             <strong>{result.correct ? "Richtig" : "Falsch"}</strong>
-            {!result.correct && (
+            {!result.correct && !result.inlineSolution && (
               <span class={styles.solution}>
                 Lösung: <span class="content">{result.solution}</span>
               </span>
