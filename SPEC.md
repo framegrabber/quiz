@@ -18,6 +18,7 @@ A static learning-quiz player on GitHub Pages. Quizzes are JSON files in a separ
 5. As a student, I can export my progress to a file and import it on another browser/device.
 6. As a teacher/parent, I share a link that pins a category and round size.
 7. As the author, I validate a quiz file locally and in CI before publishing, with precise error messages an AI can act on.
+8. As a student, I find all published quizzes on the start screen without needing a link.
 
 ## Tech Stack
 
@@ -47,6 +48,7 @@ Typecheck: npm run typecheck              # tsc --noEmit
 Format:    npm run format                 # prettier --write .
 Schema:    npm run schema                 # node scripts/schema.ts → public/schema/quiz.v1.json
 Validate:  npm run validate -- <file|dir|url>...   # node scripts/validate.ts; exit 1 on any invalid file
+Catalog:   npm run catalog -- <content dir>       # node scripts/catalog.ts → <content dir>/catalog.json; exit 1 on any invalid quiz
 ```
 
 ## Project Structure
@@ -71,6 +73,7 @@ quiz/
     ui/                      → shared presentational components
   scripts/
     validate.ts              → CLI validator (imports only non-JSX modules)
+    catalog.ts               → generates catalog.json for a content folder (used by quiz-content CI)
     schema.ts                → writes public/schema/quiz.v1.json
   public/schema/quiz.v1.json → generated; published for editor autocompletion ($schema)
   docs/
@@ -180,10 +183,34 @@ Example:
 ### Future assets
 Any asset path added in later types (images, GeoJSON for `map`/`flag` in v2) resolves relative to the quiz file URL: `new URL(path, srcUrl)`.
 
+### Catalog document
+
+`catalog.json` at the root of the content site lists the published quizzes. It is generated, never hand-written: `quiz-content` CI runs `npm run catalog` after validation and publishes the result with the quiz files (the file is gitignored there).
+
+```ts
+interface CatalogDocument {
+  catalog: 1;                    // catalog format version; distinct from quiz `schema`
+  quizzes: CatalogEntry[];       // ≥ 1, sorted by file path
+}
+interface CatalogEntry {
+  src: string;                   // quiz file URL, relative to the catalog URL ("englisch/green-line-1/be-forms.json")
+  title: string;                 // copied from the quiz
+  description?: string;
+  subject?: string;
+  grade?: number;
+  source?: string;
+  questions: number;             // question count
+}
+```
+
+- The generator walks the folder (same rules as the validator, skipping `catalog.json`), parses every quiz, and fails with the validator's messages if any is invalid. Order = file path, so folders group quizzes and file names order them.
+- The validator recognises a catalog by its `catalog` field and validates it against the catalog schema.
+
 ## Behavior
 
 ### Routing and links
-- Hash parameters: `#src=<encodeURIComponent(url)>&cat=<id>[,<id>…]&n=<positive int|all>`.
+- Hash parameters: `#src=<encodeURIComponent(url)>&cat=<id>[,<id>…]&n=<positive int|all>`, and `#catalog=<encodeURIComponent(url)>`.
+- `catalog` replaces the catalog shown on Start and is remembered (see Catalog). Same URL rules as `src`; a rejected `catalog` is ignored with a notice on Start.
 - No `src` → Start screen. With `src` → load, validate, show Overview.
 - `src` must be `https:` (or `http://localhost*` in dev); anything else → error.
 - `cat`/`n` set initial selections only; the student can change them. Unknown `cat` ids → notice, fall back to all categories.
@@ -197,7 +224,7 @@ Any asset path added in later types (images, GeoJSON for `map`/`flag` in v2) res
 - While loading, the Overview shows a placeholder layout of its final structure (no spinner, no layout shift when content arrives); error screens offer "Erneut versuchen" and "Zur Startseite".
 
 ### Screens
-1. **Start:** URL input ("Quiz-Link einfügen"; accepts a quiz file URL or a full app link with `#src=`), recent sources (title, last used, mastered x/y; remove after confirmation, progress is kept), export/import progress. **First visit (no recent sources):** short explanation of what the app does and where quiz links come from, URL input focused.
+1. **Start:** recent sources (title, last used, mastered x/y; remove after confirmation, progress is kept), overall statistics, the catalog ("Quizze entdecken"), URL input ("Quiz-Link einfügen"; accepts a quiz file URL or a full app link with `#src=`), export/import progress. **First visit (no recent sources):** short explanation of what the app does (pick a quiz below or open a link from the teacher); nothing is focused automatically.
 2. **Overview:** "‹ Meine Quizze" back to Start, title, subject/source, category toggles ("Alle" plus one per category, each with mastered x/y), round size picker (5 / 10 / 20 / Alle, plus a non-standard size from the link or quiz), Start, Link teilen. **All mastered (in the selection):** "Alles gemeistert" message; Start remains available as a review round.
 3. **Round:** question k/N, question UI, feedback (correct/incorrect, correct solution, explanation), "Weiter".
 4. **Result:** score x/N, list of wrong questions with solutions, mastery change for the round, "Neue Runde", "Zur Übersicht". **Perfect round:** a distinct message instead of an empty mistakes list.
@@ -230,6 +257,7 @@ Nothing else: no fuzzy matching, no stripping punctuation. `it's` ≠ `its`.
   - `quiz:v1:progress:<url>` → `{ [questionId]: { box, right, wrong, lastSeen } }`.
   - `quiz:v1:rounds:<url>` → `{ rounds }`: finished rounds per quiz.
   - `quiz:v1:activity` → `{ [YYYY-MM-DD local date]: { answers, correct, rounds } }` across all quizzes; days older than 60 days are dropped on write.
+  - `quiz:v1:catalog` → catalog URL from a `#catalog=` link; absent = default catalog.
 - Progress for questions no longer in the file is kept and ignored.
 - `navigator.storage.persist()` requested once (best effort).
 - **Export:** downloads `quiz-fortschritt-YYYY-MM-DD.json` with all `quiz:v1:*` entries plus `{ exportVersion: 1 }`. **Import:** file picker, validates, confirms "Vorhandenen Fortschritt ersetzen?", replaces. No merge.
@@ -252,9 +280,15 @@ Nothing else: no fuzzy matching, no stripping punctuation. `it's` ≠ `its`.
 ### Home-screen icon
 - Logo "Lernkarten-Stapel": three stacked cards with a check mark on the front card, white on the accent blue, rounded square. Source `public/icons/icon.svg`; PNGs 180 (apple-touch-icon), 192, 512, and 512 maskable (content within the 80 % safe zone), rendered by `npm run icons` with local Chrome and committed.
 
+### Catalog
+- Default catalog: `https://framegrabber.github.io/quiz-content/catalog.json`. A `#catalog=<url>` link stores another catalog URL in `quiz:v1:catalog`; it stays until another catalog link or "Standardkatalog verwenden" (shown only while a non-default catalog is active).
+- Start loads the catalog on every visit (same fetch, timeout, and error kinds as quizzes). Section "Quizze entdecken": quizzes grouped under headings "subject · Jgst. grade · source" (parts that are missing are left out; entries without any go under "Weitere Quizze"), in catalog order. Each entry is a link to `#src=<absolute URL>` showing title, description, and "x / N gemeistert" if the quiz is in the recent sources, else "N Fragen".
+- Entry `src` is resolved against the catalog URL; entries whose resolved URL is not allowed as `src` are skipped.
+- Loading: placeholder line "Katalog wird geladen …". Error: one German line naming the problem plus "Erneut versuchen"; the rest of Start keeps working.
+
 ### Security
-- Quiz content is untrusted. It is validated at load and rendered as text only (no `dangerouslySetInnerHTML`, no HTML/Markdown in v1).
-- No analytics, cookies, or third-party runtime requests other than the quiz `src`.
+- Quiz content is untrusted. It is validated at load and rendered as text only (no `dangerouslySetInnerHTML`, no HTML/Markdown in v1). The same holds for catalogs.
+- No analytics, cookies, or third-party runtime requests other than the quiz `src` and the catalog URL.
 
 ### Accessibility (WCAG 2.1 AA)
 - Every flow works keyboard-only and with a screen reader: native `<button>`/`<input>` for all controls, a visible focus. After answering, feedback is announced via an `aria-live="polite"` region that exists before it changes; focus stays in the input for typed answers (see Mobile layout) and moves to "Weiter" otherwise. On "Weiter", focus moves to the next question's answer control.
@@ -294,7 +328,7 @@ Reference devices, portrait, Safari with its toolbar visible: **iPhone SE 3rd ge
 - Path: `englisch/green-line-1/possessive-determiners.json`.
 - ≥ 40 questions, all with ids; covers my, your, his, her, its, our, their; uses all three types; explanations on the typical confusions (his/her, its/it's, your sg./pl.).
 - Own sentences only; no text copied from Green Line.
-- The `quiz-content` CI checks out `framegrabber/quiz` and runs `npm run validate -- ../quiz-content` on every push/PR; invalid files fail the build.
+- The `quiz-content` CI checks out `framegrabber/quiz`, runs `npm run validate -- ../content` on every push/PR (invalid files fail the build), and on `main` generates `catalog.json` and publishes the folder to Pages.
 
 ## Code Style
 
@@ -378,11 +412,12 @@ export interface QuestionProps<Q, A> {
 18. Loading, first-visit, all-mastered, perfect-round, storage-unavailable, and clipboard-blocked states each render their specified content.
 19. The overview shows accuracy (overall and per category), rounds, answers, and up to 5 most-missed questions; "Fehler üben" plays only those. The start screen shows the learning-day streak, the last 7 days, and overall totals. Export/import carry the statistics.
 20. Added to the iPhone home screen, the app shows the "Lernquiz" name and the card-stack icon, and starts standalone.
+21. Start lists every published quiz from the default catalog, grouped by subject and book, with progress for played quizzes; a `#catalog=` link switches the catalog and it is remembered; a catalog that fails to load shows an error with retry while the rest of Start works.
+22. Adding a valid quiz file to `quiz-content` and pushing makes it appear in the catalog without editing any other file; an invalid quiz fails CI and nothing is published.
 
 ## Out of Scope for v1
 
 - `map` and `flag` question types and the geografie-quiz converter (v2). Planned mapping: `multiple` → `choice`, `fillblanks` → `cloze` (`_` + `blanks[]` → `{answer}`), `flag-to-country` / `country-to-flag` → `flag`, `map` → `map` with map config (GeoJSON URL, projection, name property, filter) moving from `mapConfig.js` into the quiz document.
-- Library manifest / browse screen.
 - QR code for share links, offline mode/service worker, i18n, Markdown in questions, points, teacher dashboard, accounts/sync.
 
 ## Resolved Decisions

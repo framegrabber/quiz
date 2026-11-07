@@ -335,6 +335,44 @@ Spec: [`SPEC.md`](../SPEC.md) · Plan: [`plan.md`](plan.md). Standard gate for e
 
 ---
 
+## Phase 4c: Catalog (added on request)
+
+## T18: Catalog format, generator, and content CI
+**Description:** SPEC "Catalog document": `catalog: 1` schema, `npm run catalog` generator, validator support, `quiz-content` CI generates and publishes `catalog.json`.
+
+**Acceptance criteria:**
+- [ ] `src/format/catalog.ts`: strict Zod schema + `parseCatalog` with the same error shape as `parseQuiz`
+- [ ] `scripts/catalog.ts` writes `<dir>/catalog.json` (entries sorted by path, relative `src`); exits 1 with validator messages if any quiz is invalid; skips an existing `catalog.json`
+- [ ] `npm run validate` validates a catalog document as a catalog
+- [ ] `quiz-content` CI: validate on push/PR; on `main` generate the catalog and publish; `catalog.json` gitignored; README and `docs/quiz-format.md` updated
+
+**Verification:**
+- [ ] Unit tests: catalog schema (valid, unknown field, wrong version, empty list); generator output for a fixture folder (order, relative paths, invalid quiz fails)
+- [ ] Live: `https://framegrabber.github.io/quiz-content/catalog.json` lists all 5 quizzes after the CI run
+
+**Dependencies:** T6, T7
+**Files likely touched:** `src/format/catalog.ts`, `scripts/catalog.ts`, `scripts/validate.ts`, `scripts/files.ts`, `package.json`, `quiz-content/.github/workflows/pages.yml`
+**Estimated scope:** S
+
+## T19: Catalog on the start screen
+**Description:** SPEC "Catalog": default catalog, `#catalog=` override remembered in storage, "Quizze entdecken" section with groups and progress, loading and error states.
+
+**Acceptance criteria:**
+- [ ] `loadCatalog` shares fetch/timeout/error kinds with `loadQuiz`; entry URLs resolved against the catalog URL, disallowed ones skipped
+- [ ] `#catalog=` parsed and stored in `quiz:v1:catalog` (included in export/import); "Standardkatalog verwenden" only for a non-default catalog
+- [ ] Start order: intro (first visit), recent, statistics, catalog, link field, backup; no autofocus
+
+**Verification:**
+- [ ] Unit tests: hash `catalog` parsing; URL resolution and skipping; grouping
+- [ ] Component tests with axe: loading, grouped list with progress, error + retry, custom catalog + reset
+- [ ] Simulator (SE, light + dark): start screen with catalog, tap opens the quiz
+
+**Dependencies:** T13, T18
+**Files likely touched:** `src/app/Catalog.tsx`, `src/app/load.ts`, `src/app/hash.ts`, `src/app/Start.tsx`, `src/storage/catalog.ts`, `src/storage/backup.ts`
+**Estimated scope:** M
+
+---
+
 ## Phase 5: Release
 
 ## T16: Home-screen icon and manifest, final accessibility and responsive check, bundle budget

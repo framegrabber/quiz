@@ -96,12 +96,19 @@ graph TD
 ### Phase 4b: Statistics (added on request)
 - [x] T15b: Activity log, per-quiz and overall statistics, "Fehler üben"
 
+### Phase 4c: Catalog (added on request)
+- [ ] T18: Catalog format, generator, and content CI
+- [ ] T19: Catalog on the start screen
+
+### Phase 4d: Table question type (added on request)
+- [ ] T20: `table` question type (spec addition first, then schema, check, UI, Simulator keyboard check)
+
 ### Phase 5: Release
 - [x] T16: Home-screen icon ("Lernkarten-Stapel", name "Lernquiz") and manifest, final accessibility and responsive sweep, bundle budget (VoiceOver pass moves to T17, it needs a person listening)
 - [ ] T17: Release verification on simulator, real iPhone, and Pages
 
 ### Checkpoint E: Complete
-- [ ] All 20 spec success criteria met
+- [ ] All 22 spec success criteria met
 - [ ] Ready to share with the class
 
 ## Parallelization
