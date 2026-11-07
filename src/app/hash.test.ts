@@ -10,6 +10,18 @@ describe("parseHash", () => {
     expect(parseHash("", { dev: false })).toEqual({ problems: [] });
   });
 
+  test("a catalog link is kept if https, else ignored with a notice", () => {
+    const catalog = "https://example.org/catalog.json";
+    expect(
+      parseHash(hash(`catalog=${encodeURIComponent(catalog)}`), { dev: false }),
+    ).toEqual({ catalog, problems: [] });
+    expect(
+      parseHash(hash(`catalog=${encodeURIComponent("http://example.org/c")}`), {
+        dev: false,
+      }),
+    ).toEqual({ problems: ["Ungültiger Katalog-Link wird ignoriert."] });
+  });
+
   test("reads an encoded https source, categories, and round size", () => {
     expect(
       parseHash(hash(`src=${encodeURIComponent(quizUrl)}&cat=forms,its&n=5`), {

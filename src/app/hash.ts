@@ -8,11 +8,13 @@ export interface HashParams {
   srcRejected?: true;
   cats?: string[];
   n?: RoundSize;
+  /** Catalog URL from a `#catalog=` link (only if allowed). */
+  catalog?: string;
   /** Human-readable notices about ignored parameters. */
   problems: string[];
 }
 
-/** Parses `#src=<url>&cat=<id>,<id>&n=<int|all>`. Invalid values are dropped and reported. */
+/** Parses `#src=<url>&cat=<id>,<id>&n=<int|all>` and `#catalog=<url>`. Invalid values are dropped and reported. */
 export function parseHash(hash: string, { dev }: { dev: boolean }): HashParams {
   const params = new URLSearchParams(hash.replace(/^#/, ""));
   const result: HashParams = { problems: [] };
@@ -31,11 +33,17 @@ export function parseHash(hash: string, { dev }: { dev: boolean }): HashParams {
     else if (/^[1-9]\d*$/.test(n)) result.n = Number(n);
     else result.problems.push(`Ungültige Rundengröße „${n}“ wird ignoriert.`);
   }
+  const catalog = params.get("catalog");
+  if (catalog !== null) {
+    if (isAllowedSource(catalog, dev)) result.catalog = catalog;
+    else result.problems.push("Ungültiger Katalog-Link wird ignoriert.");
+  }
 
   return result;
 }
 
-function isAllowedSource(value: string, dev: boolean): boolean {
+/** Quiz and catalog URLs must be https (or localhost over http in development). */
+export function isAllowedSource(value: string, dev: boolean): boolean {
   let url: URL;
   try {
     url = new URL(value);

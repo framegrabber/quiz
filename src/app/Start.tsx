@@ -1,13 +1,19 @@
-import { useLayoutEffect, useRef, useState } from "preact/hooks";
+import { useState } from "preact/hooks";
 import {
   loadSources,
   saveSources,
   type SourceEntry,
 } from "../storage/sources.ts";
+import {
+  DEFAULT_CATALOG_URL,
+  loadCatalogUrl,
+  resetCatalogUrl,
+} from "../storage/catalog.ts";
 import { Page } from "../ui/Page.tsx";
 import { CrossIcon } from "../ui/icons.tsx";
 import { parseHash } from "./hash.ts";
 import { BackupControls } from "./BackupControls.tsx";
+import { Catalog } from "./Catalog.tsx";
 import { OverallStats } from "./OverallStats.tsx";
 import { loadActivity } from "../storage/activity.ts";
 import styles from "./Start.module.css";
@@ -35,17 +41,12 @@ export function formatLastUsed(
   return new Date(timestamp).toLocaleDateString("de-DE");
 }
 
-export function Start() {
+export function Start({ problems = [] }: { problems?: readonly string[] }) {
   const [sources, setSources] = useState<SourceEntry[]>(loadSources);
   const [activity, setActivity] = useState(loadActivity);
+  const [catalogUrl, setCatalogUrl] = useState(loadCatalogUrl);
   const [link, setLink] = useState("");
   const [error, setError] = useState<string | null>(null);
-  const fieldRef = useRef<HTMLInputElement>(null);
-
-  // First visit: the link field is the only thing to do here.
-  useLayoutEffect(() => {
-    if (sources.length === 0) fieldRef.current?.focus();
-  }, []);
 
   const open = (event: Event) => {
     event.preventDefault();
@@ -74,45 +75,16 @@ export function Start() {
       <h1>Lernquiz</h1>
       {sources.length === 0 && (
         <p>
-          Hier übst du mit Quiz-Links, die du von deiner Lehrkraft oder aus
-          deiner Klasse bekommst. Öffne den Link direkt oder füge ihn unten ein.
-          Dein Fortschritt wird nur auf diesem Gerät gespeichert.
+          Hier übst du für die Schule. Wähle unten ein Quiz aus oder öffne einen
+          Quiz-Link von deiner Lehrkraft. Dein Fortschritt wird nur auf diesem
+          Gerät gespeichert.
         </p>
       )}
-      <form class={styles.form} onSubmit={open} noValidate>
-        <label class={styles.label} for="quiz-link">
-          Quiz-Link einfügen
-        </label>
-        <div class={styles.row}>
-          <input
-            id="quiz-link"
-            class="text-input"
-            type="url"
-            inputMode="url"
-            autocapitalize="off"
-            autocorrect="off"
-            spellcheck={false}
-            enterKeyHint="go"
-            ref={fieldRef}
-            placeholder="https://…"
-            value={link}
-            aria-invalid={error ? true : undefined}
-            aria-describedby={error ? "quiz-link-error" : undefined}
-            onInput={(e) => {
-              setLink(e.currentTarget.value);
-              setError(null);
-            }}
-          />
-          <button type="submit" class="btn btn-primary" disabled={!link.trim()}>
-            Öffnen
-          </button>
-        </div>
-        {error && (
-          <p id="quiz-link-error" class="text-incorrect" role="alert">
-            {error}
-          </p>
-        )}
-      </form>
+      {problems.map((problem) => (
+        <p key={problem} class={styles.notice} role="status">
+          {problem}
+        </p>
+      ))}
       {sources.length > 0 && (
         <section class={styles.section} aria-labelledby="recent-title">
           <h2 id="recent-title">Zuletzt geöffnet</h2>
@@ -143,6 +115,48 @@ export function Start() {
         </section>
       )}
       <OverallStats activity={activity} />
+      <Catalog
+        url={catalogUrl}
+        isDefault={catalogUrl === DEFAULT_CATALOG_URL}
+        sources={sources}
+        onReset={() => {
+          resetCatalogUrl();
+          setCatalogUrl(DEFAULT_CATALOG_URL);
+        }}
+      />
+      <form class={styles.form} onSubmit={open} noValidate>
+        <label class={styles.label} for="quiz-link">
+          Quiz-Link einfügen
+        </label>
+        <div class={styles.row}>
+          <input
+            id="quiz-link"
+            class="text-input"
+            type="url"
+            inputMode="url"
+            autocapitalize="off"
+            autocorrect="off"
+            spellcheck={false}
+            enterKeyHint="go"
+            placeholder="https://…"
+            value={link}
+            aria-invalid={error ? true : undefined}
+            aria-describedby={error ? "quiz-link-error" : undefined}
+            onInput={(e) => {
+              setLink(e.currentTarget.value);
+              setError(null);
+            }}
+          />
+          <button type="submit" class="btn btn-primary" disabled={!link.trim()}>
+            Öffnen
+          </button>
+        </div>
+        {error && (
+          <p id="quiz-link-error" class="text-incorrect" role="alert">
+            {error}
+          </p>
+        )}
+      </form>
       <BackupControls
         onRestored={() => {
           setSources(loadSources());

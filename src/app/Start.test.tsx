@@ -33,13 +33,11 @@ test("formatLastUsed says heute / gestern / date", () => {
   expect(formatLastUsed(new Date(2026, 9, 1).getTime(), now)).toBe("1.10.2026");
 });
 
-test("first visit explains the app and opens a pasted link", async () => {
+test("first visit explains the app, focuses nothing, and opens a pasted link", async () => {
   const { container } = render(<Start />);
-  expect(
-    screen.getByText(/Quiz-Links, die du von deiner Lehrkraft/),
-  ).toBeTruthy();
+  expect(screen.getByText(/Wähle unten ein Quiz aus/)).toBeTruthy();
   const field = screen.getByLabelText("Quiz-Link einfügen") as HTMLInputElement;
-  expect(document.activeElement).toBe(field);
+  expect(document.activeElement).toBe(document.body);
   await expectNoAxeViolations(container);
 
   fireEvent.input(field, { target: { value: "kein link" } });
@@ -64,9 +62,7 @@ test("recent quizzes are listed newest first and can be removed after confirming
   });
   saveSources([entry(2), entry(1)]);
   const { container } = render(<Start />);
-  expect(
-    screen.queryByText(/Quiz-Links, die du von deiner Lehrkraft/),
-  ).toBeNull();
+  expect(screen.queryByText(/Wähle unten ein Quiz aus/)).toBeNull();
   const links = screen.getAllByRole("link");
   expect(links.map((a) => a.getAttribute("href"))).toEqual([
     `#src=${encodeURIComponent("https://example.org/2.json")}`,

@@ -13,6 +13,7 @@ import {
   recordActivity,
 } from "./activity.ts";
 import { loadSources, saveSources } from "./sources.ts";
+import { loadCatalogUrl, saveCatalogUrl } from "./catalog.ts";
 
 beforeEach(() => localStorage.clear());
 
@@ -33,6 +34,7 @@ function seed() {
   recordActivity({ answers: 4, correct: 3, rounds: 1 });
   countRound(URL_A);
   localStorage.setItem("other-app", "keep me");
+  saveCatalogUrl("https://example.org/catalog.json");
 }
 
 test("export → clear → import restores identical app data and leaves other keys alone", () => {
@@ -43,9 +45,11 @@ test("export → clear → import restores identical app data and leaves other k
     sources: loadSources(),
     activity: loadActivity(),
     rounds: loadRounds(URL_A),
+    catalog: loadCatalogUrl(),
   });
   const before = snapshot();
   expect(before.rounds).toBe(1);
+  expect(before.catalog).toBe("https://example.org/catalog.json");
 
   saveProgress(URL_A, {});
   saveSources([]);

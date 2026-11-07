@@ -8,7 +8,7 @@ Tokens: [`src/styles/tokens.css`](../src/styles/tokens.css). Element defaults an
 
 | Screen | Job | Primary action | Required states |
 |---|---|---|---|
-| Start | Get to a quiz | Open a pasted quiz link | First visit (explanation, input focused) · recent quizzes · invalid link (inline error) · storage unavailable (banner) |
+| Start | Get to a quiz | Tap a quiz in "Quizze entdecken" or "Zuletzt geöffnet" | First visit (explanation, nothing focused) · recent quizzes · catalog loading (one muted line) · catalog grouped by "subject · Jgst. · source" (small muted group headings, same list rows as recent quizzes, "N Fragen" or "x / N gemeistert") · catalog error (alert + "Erneut versuchen") · custom catalog ("Standardkatalog verwenden") · invalid link (inline error) · storage unavailable (banner) |
 | Overview | Pick what to practise and see progress | "Starten" (sticky bottom bar) | Loading (placeholder of the final structure) · normal · all mastered in the selection ("Alles gemeistert", Start stays as review) · unknown `cat` notice · clipboard blocked (selectable link) |
 | Round | Answer one question at a time | "Antwort abgeben" → "Weiter" (action bar) | Answering · submit disabled (incomplete) · feedback correct · feedback incorrect with solution · explanation |
 | Result | Show how the round went | "Neue Runde" | Mistakes list · perfect round message |

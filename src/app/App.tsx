@@ -5,8 +5,14 @@ import { ErrorScreen } from "./ErrorScreen.tsx";
 import { OverviewPlaceholder } from "./Overview.tsx";
 import { QuizScreen } from "./QuizScreen.tsx";
 import { Start } from "./Start.tsx";
+import { saveCatalogUrl } from "../storage/catalog.ts";
 
-const readHash = () => parseHash(location.hash, { dev: import.meta.env.DEV });
+/** Reads the hash; a `#catalog=` link is remembered before anything renders. */
+function readHash() {
+  const params = parseHash(location.hash, { dev: import.meta.env.DEV });
+  if (params.catalog) saveCatalogUrl(params.catalog);
+  return params;
+}
 
 /** Routes by the URL hash: start screen, loading, errors, or a loaded quiz. */
 export function App() {
@@ -39,7 +45,7 @@ export function App() {
 
   if (params.srcRejected)
     return <ErrorScreen error={{ kind: "url" }} onHome={goHome} />;
-  if (!params.src) return <Start />;
+  if (!params.src) return <Start problems={params.problems} />;
 
   const result = load?.src === params.src ? load.result : undefined;
   if (!result) return <OverviewPlaceholder />;

@@ -1,5 +1,5 @@
 import { expect, test } from "vitest";
-import { loadQuiz } from "./load.ts";
+import { loadCatalog, loadQuiz } from "./load.ts";
 import valid from "../format/fixtures/valid.json" with { type: "json" };
 
 const respond =
@@ -72,4 +72,29 @@ test("invalid quiz reports format errors", async () => {
   } else {
     throw new Error(`unexpected result ${JSON.stringify(result)}`);
   }
+});
+
+test("catalog entries resolve against the catalog URL; disallowed ones are skipped", async () => {
+  const catalog = {
+    catalog: 1,
+    quizzes: [
+      { src: "englisch/a.json", title: "A", questions: 3 },
+      { src: "https://other.example/b.json", title: "B", questions: 4 },
+      { src: "http://insecure.example/c.json", title: "C", questions: 5 },
+    ],
+  };
+  const result = await loadCatalog("https://x.example/content/catalog.json", {
+    fetchImpl: respond(JSON.stringify(catalog)),
+  });
+  expect(result.ok && result.quizzes.map((q) => [q.title, q.url])).toEqual([
+    ["A", "https://x.example/content/englisch/a.json"],
+    ["B", "https://other.example/b.json"],
+  ]);
+});
+
+test("a quiz file is not a valid catalog", async () => {
+  const result = await loadCatalog("https://x/catalog.json", {
+    fetchImpl: respond(JSON.stringify(valid)),
+  });
+  expect(result.ok || result.error.kind).toBe("invalid");
 });

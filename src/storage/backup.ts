@@ -7,6 +7,7 @@ import {
 } from "./activity.ts";
 import { quizProgressSchema } from "./progress.ts";
 import { SOURCES_KEY, sourcesSchema } from "./sources.ts";
+import { CATALOG_KEY, catalogUrlSchema } from "./catalog.ts";
 import { PREFIX, appKeys, removeValue, writeValue } from "./store.ts";
 
 const PROGRESS_PREFIX = `${PREFIX}progress:`;
@@ -15,6 +16,7 @@ const PROGRESS_PREFIX = `${PREFIX}progress:`;
 function schemaFor(key: string): z.ZodType | null {
   if (key === SOURCES_KEY) return sourcesSchema;
   if (key === ACTIVITY_KEY) return activitySchema;
+  if (key === CATALOG_KEY) return catalogUrlSchema;
   if (key.startsWith(PROGRESS_PREFIX)) return quizProgressSchema;
   if (key.startsWith(ROUNDS_PREFIX)) return roundsSchema;
   return null;
