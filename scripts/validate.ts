@@ -1,50 +1,20 @@
-// Validates quiz files: `npm run validate -- <file|dir|url>...`. Exit code 1 if any file is invalid.
-import { readdir, readFile, stat } from "node:fs/promises";
-import { join } from "node:path";
+// Validates quiz and catalog files: `npm run validate -- <file|dir|url>...`. Exit code 1 if any file is invalid.
 import { parseQuiz, type FormatError } from "../src/format/parse.ts";
 import { fitWarnings } from "../src/format/fitWarnings.ts";
-
-const IGNORED_FILES: Record<string, true> = {
-  "package.json": true,
-  "package-lock.json": true,
-  "tsconfig.json": true,
-};
-
-async function collect(target: string): Promise<string[]> {
-  if (/^https?:\/\//.test(target)) return [target];
-  if (!(await stat(target)).isDirectory()) return [target];
-  const files: string[] = [];
-  for (const entry of await readdir(target, { withFileTypes: true })) {
-    if (entry.name.startsWith(".") || entry.name === "node_modules") continue;
-    const path = join(target, entry.name);
-    if (entry.isDirectory()) files.push(...(await collect(path)));
-    else if (entry.name.endsWith(".json") && !IGNORED_FILES[entry.name])
-      files.push(path);
-  }
-  return files;
-}
-
-async function load(source: string): Promise<string> {
-  if (!/^https?:\/\//.test(source)) return readFile(source, "utf8");
-  const response = await fetch(source, { cache: "no-cache" });
-  if (!response.ok) throw new Error(`HTTP ${response.status}`);
-  return response.text();
-}
+import { isCatalogDocument, parseCatalog } from "../src/format/catalog.ts";
+import { collectJsonFiles, loadJson } from "./files.ts";
 
 async function validate(
   source: string,
 ): Promise<{ errors: FormatError[]; warnings: FormatError[] }> {
-  let data: unknown;
-  try {
-    data = JSON.parse(await load(source));
-  } catch (error) {
-    const reason =
-      error instanceof SyntaxError
-        ? `Kein gültiges JSON: ${error.message}`
-        : String(error);
-    return { errors: [{ path: "", message: reason }], warnings: [] };
+  const loaded = await loadJson(source);
+  if (!loaded.ok)
+    return { errors: [{ path: "", message: loaded.message }], warnings: [] };
+  if (isCatalogDocument(loaded.data)) {
+    const result = parseCatalog(loaded.data);
+    return { errors: result.ok ? [] : result.errors, warnings: [] };
   }
-  const result = parseQuiz(data);
+  const result = parseQuiz(loaded.data);
   if (!result.ok) return { errors: result.errors, warnings: [] };
   return { errors: [], warnings: fitWarnings(result.quiz) };
 }
@@ -55,7 +25,7 @@ if (targets.length === 0) {
   process.exit(2);
 }
 
-const files = (await Promise.all(targets.map(collect))).flat();
+const files = (await Promise.all(targets.map(collectJsonFiles))).flat();
 if (files.length === 0) {
   console.error("Keine Quiz-Dateien gefunden.");
   process.exit(1);

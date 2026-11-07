@@ -113,6 +113,15 @@ Both sides are normalized, then compared exactly:
 
 Nothing else is forgiven: no typo tolerance, punctuation counts. `its` ≠ `it's`. Add real alternatives to `accept` (input) or `{a|b}` (cloze).
 
+## Catalog
+
+The start screen lists every quiz from `https://framegrabber.github.io/quiz-content/catalog.json`. You never write this file: `quiz-content` CI runs `npm run catalog -- ../content` after validation and publishes it.
+
+- Each quiz contributes `title`, `description`, `subject`, `grade`, `source`, and its question count. Quizzes are grouped under "subject · Jgst. grade · source", so give quizzes from the same book identical values.
+- Order is the file path (`englisch/green-line-1/…`); prefix file names (`01-…`) to control it.
+- A catalog document has `"catalog": 1` and a `quizzes` list of `{ src, title, description?, subject?, grade?, source?, questions }`, with `src` relative to the catalog. The validator checks such files too.
+- Another catalog (e.g. another teacher's repo) can be opened with `https://framegrabber.github.io/quiz/#catalog=<URL-encoded catalog link>`; the app remembers it.
+
 ## Validation rules
 
 Errors (the file is rejected):
